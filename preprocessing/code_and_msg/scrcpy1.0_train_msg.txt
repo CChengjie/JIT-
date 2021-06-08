@@ -1,0 +1,3329 @@
+Mirror "secure" content
+
+Some applications, like Silence, prevent the content of a window from
+being viewed on non-secure displays:
+<https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_SECURE>
+
+We can mirror it by just creating a "secure" display:
+<https://developer.android.com/reference/android/view/Display#FLAG_SECURE>
+Reference USBaudio from README
+Only set valid PTS/DTS
+
+When the PTS is valid, set both PTS and DTS to avoid FFmpeg warnings.
+
+Since configuration packets have no PTS, do not record these packets.
+Support AVStream.codec for old FFmpeg versions
+
+AVStream.codec has been deprecated in favor of AVStream.codecpar.
+
+Due to the FFmpeg/Libav split, this happened in two separate versions:
+ - 57.33.100 for FFmpeg
+ - 57.5.0 for Libav
+Add run script
+
+Add a script to simplify the execution of scrcpy generated in a specific
+build directory.
+
+To run scrcpy generated in builddir, with a video size of 1024:
+
+    ./run builddir -m 1024
+Use consistent variable names
+
+Use the same variable name in functions declaration and definition.
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Merge pull request #522 from dos1/compositor
+
+Disable X11 compositor bypass
+fixup! Handle all shortcuts in the same function
+Add option to change the push target
+
+A drag & drop always pushed the file to /sdcard/.
+
+Add an option to customize the target directory.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/659>
+Bump version to 1.8
+Send and recv all data when necessary
+
+Expose net_recv_all() and net_send_all(), equivalent of net_recv() and
+net_send(), but that waits/retries until the requested length has been
+transferred.
+
+Use these new functions where it was (wrongly) assumed that the
+requested length had been transferred.
+Fix comment style
+
+For consistency.
+Refactor to support Meta in shortcuts
+
+Move the Ctrl and Meta key down checks to each shortcut individually, so
+that we can add a shortcut involving Meta.
+Move server-related functions to server.c
+
+In addition to the functions to start/stop the server, move the
+functions to push the jar and enable/disable the "adb reverse" tunnel.
+Merge branch 'master' into dev
+Fix typo in README
+Always use the best render scale quality available
+
+Because why not.
+
+See <https://wiki.libsdl.org/SDL_HINT_RENDER_SCALE_QUALITY>.
+Assert return value of mutex functions
+
+Mutex functions may only fail due to a programming error.
+
+Use assertions in debug builds, and ignore the value in release builds.
+Disable custom SDL signal handlers
+
+Request SDL not to replace the SIGINT and SIGTERM handlers, so that the
+process is immediately terminated on Ctrl+C.
+
+This avoids process hanging on Ctrl+C during network calls on
+initialization.
+
+Some of them accepted a timeout, but it was not used since
+commit 9b056f5091ad0bc35cd0188cfcb887eb30269fef anymore.
+Reenable custom SDL signal handlers
+
+This partially reverts commit f00c6c5b1321860eb6d590928448778ec8f43278.
+
+On Ctrl+C, we need to execute cleanup code. For instance, if recording
+is enabled, we need to write MP4 file trailer on exit.
+
+Custom SDL signal handlers were disabled because it leaded to process
+hanging on Ctrl+C during network calls on initialization, but now it
+seems to work correctly, the network calls return immediately on signal.
+Update README.md
+
+Fix Typo
+Describe the --no-window feature in README
+Bump version to 1.9
+Upgrade FFmpeg (4.1.3) for Windows
+
+Include the latest version of FFmpeg in Windows releases.
+Install on macOS via Homebrew in README
+
+The application is now packaged for Homebrew:
+<https://github.com/Homebrew/homebrew-core/pull/25173>
+
+Give instructions to install it from Homebrew for macOS (it's much
+easier).
+
+Thanks to @stek29 for the formula ;-)
+Add a FAQ for common issues
+Add missing no_window initialization
+
+Initialize the field no_window in "struct args"
+Simplify cleanup
+
+The cleanup is not linear: for example, the server must be stopped and
+its sockets must be shutdown after the stream and controller are stopped
+(so that they don't continue processing garbage), but before they are
+joined, to avoid a deadlock if they are blocked on a socket read.
+
+Simplify the spaghetti-cleanup by keeping trace of initialization at
+runtime.
+Upgrade platform-tools (29.0.5) for Windows
+
+Include the latest version of adb in Windows releases.
+Rename (un)lock_mutex to mutex_(un)lock
+
+For consistency, rename lock_mutex and unlock_mutex to mutex_lock and
+mutex_unlock.
+Deprecate short options for advanced features
+
+The short options will be removed in the future (and may be reused for
+other features).
+Fix typos
+
+PR <https://github.com/Genymobile/scrcpy/pull/927>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add Makefile recipe for debug build
+
+Expose commands to build the application in debug mode.
+Use ADB environment variable
+
+Use the ADB environment variable to provide a custom adb path.
+Merge pull request #442 from npes87184/master
+
+server/meson.build: support relative path for prebuilt_server
+Implement framework wrappers separately
+
+Move the DeviceUtil internal static classes to public classes, in a
+separate package (".wrappers").
+
+This paves the way to implement InputManager properly.
+Send touch events from the client
+
+On SDL touch events, send control messages to the server.
+Add link to Gentoo Ebuild in README
+Use cbuf for control event queue
+
+Replace the control_event_queue implementation by cbuf.
+Disable sanitizer on debug builds
+
+On our Windows machine, the mingw ld.exe does not support sanitizers.
+
+Exclude them from the default debug build.
+Extract control event String parsing
+
+Parsing a String from a serialized control event, encoded as length (2
+bytes) + data, will be necessary in several events.
+
+Extract it to a separate method.
+Use net_close() to close sockets
+
+So that it also works on Windows.
+Add a script to build the server without gradle
+
+Gradle versions may sometimes cause problems. This script offers an
+alternative.
+Rename "pointer" to "mouse pointer"
+
+This will help to distinguish them from "touch pointers".
+Merge pull request #411 from npes87184/master
+
+tests: fix test_control_event_serialize
+Add unit testing instructions in README
+Configure version at meson project level
+
+Make meson aware of the project version, so that it does not print:
+
+    Project version: undefined
+Define SDL_MAIN_HANDLED in all tests
+
+Each test defines its own main() function. If this flag is not set, then
+SDL redefines it to SDL_main(), causing compilation failures.
+Generate VERSION_NAME in build_without_gradle.sh
+
+Since commit b963a3b9d56f744cceba2e19cba3f9fef858c058, the server uses
+BuildConfig.VERSION_NAME.
+
+Generate this field manually for building without gradle.
+Document "push file" feature
+
+Document how to push a file to /sdcard/ in the shortcuts list.
+Log recording failure
+
+If recording fails, log "recording failed" instead of "recording
+complete".
+Replace SDL types by C99 standard types
+
+Scrcpy is a C11 project. Use the C99 standard types instead of the
+SDL-specific types:
+
+    SDL_bool -> bool
+    SintXX   -> intXX_t
+    UintXX   -> uintXX_t
+Add FAQ section about mouse clicks
+
+On some devices, mouse clicks do not work by default. Enabling an option
+is required.
+Log scrcpy version and URL on start
+
+Keep --version which also print the version of dependencies.
+Use SDL_bool return to indicate success
+
+For clarity and consistency across the application, return SDL_TRUE
+(instead of 0) on success and SDL_FALSE on failure (instead of
+non-zero).
+Do not crash on control error
+
+Some devices do not have some methods that we invoke via reflection, or
+their call do not return the expected value. In that case, do not crash
+the whole controller.
+Update links to v1.12.1 in README and BUILD
+Move utilities to util/
+Clean up the server from temporary folder
+
+The server is copied to /data/local/tmp/scrcpy-server.jar and executed
+on the device.
+
+As soon as we are connected, we can unlink (rm) it from /data/local/tmp,
+to keep the device clean.
+Do not send simple mouse move events
+
+Moving the mouse without any button pressed has no effect on Android.
+Therefore, do not even send these very frequent events.
+Refactor screencontrol to inputmanager
+
+The "screen control" handled user input, which happened to be only
+used to control the screen.
+
+The controller and screen were passed to every function. Instead, group
+them in a struct input_manager.
+
+The purpose is to add a new shortcut to enable/disable FPS counter. This
+feature is not related to "screen control", and will require access to
+the "frames" instance.
+Add method to log error without throwable
+
+Add Ln.e(message) in addition to Ln.e(message, error).
+Add GET_CLIPBOARD device event
+
+Add the first device event, used to forward the device clipboard to the
+computer.
+prevent closing console right after process error in windows
+
+Signed-off-by: yuchenlin <npes87184@gmail.com>
+Bump version to 1.5
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Merge branch 'dev' into release
+Fix event ownership comment
+Fix net_send_all() warning
+
+If len is not positive, w could be returned uninitialized.
+Revert "Fix Makefile for Windows"
+
+In MSYS2 on Windows, the behavior is the same as on Linux.
+
+On systems where the behavior is not the same, just customize the GRADLE
+variable:
+
+    GRADLE=gradlew make release
+
+This reverts commit de192cab1b5f0829fedd34d4feb569445c02346c.
+Enable debug logs only for debug builds
+
+In release mode, use the default log priorities.
+Update links to v1.1 in README
+Do not init SDL video subsystem if no display
+
+The SDL video subsystem is not necessary if we don't display the video.
+
+Move the sdl_init_and_configure() function from screen.c to scrcpy.c,
+because it is not only related to the screen display.
+Make server_connect_to() return a bool
+
+The resulting socket is accessible from the server instance, there is no
+need to return it.
+
+This paves the way to use several sockets in parallel.
+Fix typo in test name
+Add toString() methods to java point classes
+
+Useful for debugging.
+Print gradle output on compiling
+
+Enable the attribute "console" of custom_target() introduced in meson
+0.48. This allows to get a feedback of what gradle does (which can takes
+a very long time).
+
+This produces warnings because we declare to support meson >= 0.37, but
+we don't want to stop supporting older versions for that. Older versions
+just ignore the option:
+
+> WARNING: Unknown keyword arguments in target scrcpy-server: console
+
+Newer meson versions use it, but warn because we declare supporting
+older versions:
+
+> WARNING: Project targetting '>= 0.37' but tried to use feature
+> introduced in '0.48.0': console arg in custom_target
+
+Meson does not support conditional branches to suppress such warnings,
+so just keep the warnings.
+Do not inline lockutil functions
+
+This duplicates chars in the final binary.
+Add support for CTRL+S to send hardware "shake" to device w/readme
+Add shortcut to expand/collapse notification panel
+
+Use Ctrl+n to expand, Ctrl+Shift+n to collapse.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/392>
+Forward double-click events
+
+Double-clicks were not sent to the device anymore since the
+"double-click on black borders" feature.
+
+When a double click occurs inside the device screen, send the event to
+the device normally.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/97>.
+Provide decoder_init()
+
+Expose an initializer so that the caller does not have to guess what
+fields must be initialized.
+Swap position/point names
+
+A point is a 2D vector. A position represent a point relative to the
+screen size.
+Extract video size computation
+
+One method, one thing.
+Use a meson option to crossbuild for Windows
+
+Meson decided to crossbuild for Windows as soon as
+meson.is_cross_build() returned true. This made non-Windows crossbuilds
+fail.
+
+Instead, add an explicit option "crossbuild_windows".
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/165>.
+Add Apache 2 LICENSE file
+Fix building on OS X (missing NULL in queue.h)
+
+Headers seem to be a bit different in Apple land and you need to include
+stddef.h explicitly to the NULL declaration.
+
+This also makes the code a bit more correct, as stddef.h is the header
+in the C standard that defines NULL
+(https://en.cppreference.com/w/cpp/header/cstddef).
+Remove useless blocks in switch/case
+
+Remove unnecessary additional blocks.
+Fix noconsole.exe
+
+The linker flag "-mwindows" has no effect on my current MinGW.
+
+Instead, passing "-Wl,--subsystem,windows" works.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/691>
+Correct return value type in handle_event
+
+handle_event return the type enum event_result not bool
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Close decoder on stream ended
+
+Add missing call to decoder_close().
+Declare fun(void) functions with no parameters
+
+This is not C++.
+Fix help for --record-format
+
+Record format requires a parameter.
+Update README.md
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Use two sockets for video and control
+
+The socket used the device-to-computer direction to stream the video and
+the computer-to-device direction to send control events.
+
+Some features, like copy-paste from device to computer, require to send
+non-video data from the device to the computer.
+
+To make them possible, use two sockets:
+ - one for streaming the video from the device to the client;
+ - one for control/events in both directions.
+Fix indentation
+Use SDL_bool return type instead of int
+
+Many functions returned an int to indicate their success. For clarity,
+use SDL_bool instead.
+Add device event receiver
+
+Create a separate component to handle device events, managed by the
+controller.
+Merge commands with other control events
+
+Several commands were grouped under the same event type "command", with
+a separate field to indicate the actual command.
+
+Move these commands at the same level as other control events. It will
+allow to implement commands with arguments.
+Make checkstyle happy
+
+Reorder the imports to remove checkstyle warnings.
+Add links to FFmpeg and LibSDL2 dependencies
+Capture all Ctrl events
+
+For consistency, capture all Ctrl events (not only those we react to).
+Fix expected parameters count in error message
+input_manager.c: Correct log
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Bump version to 1.7
+Fix checkstyle warning
+Provide config.h.in for old meson versions
+
+The current meson version is able to generate a config.h from a
+configuration data object without any template.
+
+However, older versions of meson require a template, so provide it for
+compatibility.
+Apply Genymobile rules for Android projects
+
+Apply Genymobile checkstyle and gradle build files organization.
+Fix a spell mistake
+
+After commented default portable option in `app/meson.build` get some
+error and then find this. :)
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Use "always on top" only for SDL >= 2.0.5
+
+The flag SDL_WINDOW_ALWAYS_ON_TOP is available since SDL 2.0.5.
+
+Do not use it if SDL is older, to fix compilation failure.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/432>
+Improve portable builds
+
+In portable builds, scrcpy-server.jar was supposed to be present in the
+current directory, so in practice it worked only if scrcpy was launched
+from its own directory.
+
+Instead, find the absolute path of the executable and build a suitable
+path to use scrcpy-server.jar from the same directory.
+Notify adb missing
+
+There are many user who encounters missing adb.
+To stop things happens again, we check it and show
+sexy response to user.
+
+Signed-off-by: yuchenlin <npes87184@gmail.com>
+Avoid pointer arithmetic on "void *"
+
+Fix the following warning (with -Wpedantic enabled):
+
+    pointer of type ‘void *’ used in arithmetic [-Wpointer-arith]
+Simplify README for Windows users
+
+So that users stop downloading platform-tools unnecessarily.
+Remove useless newlines in SDL_Log*
+
+Trailing new line is not necessary in SDL_Log* methods.
+Fix manpage format
+Swap MENU and APP_SWITCH shortcuts
+
+Ctrl+s was mapped to MENU, while Ctrl+m was mapped to APP_SWITCH.
+
+To avoid confusion, swap the shortcuts:
+ - Ctrl+m like _M_enu
+ - Ctrl+s like _S_witch
+Forward repeated volume events
+
+Send repeated events when holding volume up/down shortcuts.
+Extract String literal to static constant
+Extract control event parsing to separate methods
+
+Use one parse method per control event type.
+Add unit test for device message serialization
+
+There was a test for the deserialization, but not for the serialization.
+Update links to v1.5 in README and BUILD
+Revert "Enable high dpi support"
+
+Just enabling this flag breaks mouse location values.
+
+This reverts commit 38b56f552e0667db60c7022d4a2713da8fb4e338.
+Indicate that libs are included for Windows
+Make buffer util functions accept const buffers
+
+So that they can be used both on const and non-const input buffers.
+Document --window-title in README
+Document scrcpy via SSH tunnel in README
+Change the window icon color in debug mode
+
+To highlight the debug/release mode of the running application, use a
+different window icon color in debug mode.
+Add recorder
+
+Implement recording in a separate "class".
+Use cbuf for file handler request queue
+
+Replace the file_handler_request_queue implementation by cbuf.
+Terminate the server on stop
+
+On user request to quit, two kinds of blocking calls must be interrupted
+on the server:
+ 1. the reads from and writes to the socket;
+ 2. the call to MediaCodec.dequeueOutputBuffer().
+
+The former case was handled by calling shutdown() on the socket from the
+client, but the latter was not managed.
+
+There is no easy way to wake this call properly, so just terminate the
+process from the client (i.e. send SIGTERM on Linux) instead.
+Enable mouse focus clickthrough
+
+Consider a click to gain focus as a click on the device.
+Indent switch blocks content
+
+For readability, indent "case" in switch blocks.
+
+Replace:
+
+    switch (x) {
+    case 1:
+        // ...
+    case 2:
+        // ...
+    case 3: { // a local scope block
+        int i = 42;
+        // ...
+    }
+    }
+
+By:
+
+    switch (x) {
+        case 1:
+            // ...
+        case 2:
+            // ...
+        case 3: { // a local scope block
+            int i = 42;
+            // ...
+        }
+    }
+Replace uint64_t by Uint64 for consistency
+
+The field pts is declared Uint64 in struct frame_meta.
+Fix mouse clicks on LG devices
+
+Use default values (0) for some fields of PointerCoords so that mouse
+clicks work correctly on LG devices.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/18>.
+Change volume shortcuts
+
+I could not make Ctrl+'+' and Ctrl+'-' work for every keyboard on every
+platform.
+
+Instead, use Ctrl+UP and Ctrl+DOWN (like in VLC) to change the volume.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/103>.
+Support screens with dimensions not divisible by 8
+
+The codec only supports dimensions which are multiple of 8.
+
+Thus, when --max-size is specified, the value is always rounded down to
+the nearest multiple of 8.
+
+However, it was wrongly assumed that the physical size is always a
+multiple of 8. To support such devices, also round down the physical
+screen dimensions.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/39>.
+Improve FAQ
+Merge branch 'master' into dev
+Fix control event String parsing
+
+At least 2 bytes must be available to read the length of the String.
+Double the default bitrate
+
+Set the default video bitrate to 8Mbps. This greatly increase quality on
+fast motion, without negative side effects.
+Merge branch 'dev'
+Fix header guard name
+Rename function to "power on"
+
+This will reduce confusion between "power on" when the device is off and
+"turn device screen off" while mirroring.
+Remove useless screen render on initialization
+
+screen_render() should not be called on initialization:
+ 1. it is useless, since the window is hidden until the first frame;
+ 2. it writes an empty texture (probably green) to the renderer.
+Try new methods before legacy ones
+
+Use the legacy methods when the new ones do not exist.
+Fix indentation
+
+Previous refactorings broke indentation.
+Fix mouse focus clickthrough
+
+Mouse focus clickthrough didn't work due to compat.h header not being
+included in scrcpy.c.
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Merge pull request #587 from schwabe/fix_586_screen_off_qbeta
+
+Use getPhysicalDisplayToken if getBuiltInDisplay is not found
+Merge pull request #614 from beango1:window-title-simple
+
+add option window-title to set the title
+Do not minimize on focus loss
+
+The default behavior seems annoying.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/554>
+Use positive options names internally
+
+For clarity, store the flag resulting of the command-line options
+--no-control and --no-display into "control" and "display".
+Separate build instructions from README
+
+README included build instructions, which made it complicated to follow.
+Move the build instructions to a separate file (BUILD.md).
+Rename scrcpy-server.jar to scrcpy-server
+
+The server name ending with .jar has several drawbacks:
+ - meson requires the jar executable to attempt to modify it:
+     <https://github.com/Genymobile/scrcpy/issues/404#issuecomment-456065923>
+     <https://github.com/mesonbuild/meson/issues/4844>
+ - meson warns during "ninja install"
+     <https://github.com/Genymobile/scrcpy/issues/458>
+ - some users try to execute it on the computer as a java executable
+
+Removing the extension solves all these problems.
+Describe screen rotation shortcut in README
+Add debug log on new screenrecord execution
+
+To easily notice problems with screenrecord execution, log every new
+instance started.
+Enable debug logs only for debug builds on server
+
+Print the logs only if their level is not under the threshold, which is
+defined to INFO in release mode and DEBUG in debug mode.
+Never return 0 for stream protocol
+
+On socket disconnection, on Linux, recv() returns -1 and errno is set.
+But on Windows, errno is 0.
+
+In that case, AVERROR(errno) == 0, leading to the warning:
+
+> Invalid return value 0 for stream protocol
+
+To avoid the problem, if errno is 0, return AVERROR_EOF.
+
+Ref: commit 2876463d394c3bc4dc239a605e65ebab75598353
+Implement device screen off while mirroring
+
+Add two shortcuts:
+ - Ctrl+o to turn the device screen off while mirroring
+ - Ctrl+Shift+o to turn it back on
+
+On power on (either via the POWER key or BACK while screen is off), both
+the device screen and the mirror are turned on.
+
+<https://github.com/Genymobile/scrcpy/issues/175>
+Explain how to customize path in README
+Add bit-rate command-line option
+
+Add a command-line option (-b/--bit-rate) to customize the video
+bit-rate.
+Add buffer_read16be()
+
+Add a function to read 16 bits in big-endian to a uint16_t.
+Move device-related code to device.c
+
+Move the code to read the initial device info from scrcpy.c to a
+separate file, device.c.
+Do not use too recent set_quoted()
+
+Old versions of meson do not support set_quoted(). Replace the call by
+the old-fashioned manual quotation.
+Include dependencies version
+
+On --version, also print the dependencies version scrcpy has been
+compiled against.
+Recover if expand/collapse panels is not available
+
+Some devices don't have the required method. Recover gracefully without
+crashing the server.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/506>.
+Fix meson.build codestyle
+Move annotation comment
+
+This confused the Android Studio code formatter.
+Make it work over tcpip
+
+"adb reverse" currently does not work over tcpip (i.e. on a device
+connected by "adb connect"):
+<https://issuetracker.google.com/issues/37066218>
+
+To work around the problem, if the call to "adb reverse" fails, then
+fallback to "adb forward", and reverse the client/server roles.
+
+Keep the "adb reverse" mode as the default because it does not involve
+connection retries: when using "adb forward", the client must try to
+connect successively until the server listens.
+
+Due to the tunnel, every connect() will succeed, so the client must
+attempt to read() to detect a connection failure. For this purpose, when
+using the "adb forward" mode, the server initially writes a dummy byte,
+read by the client.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/5>.
+Fix scroll wheel mouse position
+
+SDL_MouseWheelEvent does not provide the mouse location, so we used
+SDL_GetMouseState() to retrieve it.
+
+Unfortunately, SDL_GetMouseState() returns a position expressed in the
+window coordinate system while the position filled in SDL events are
+expressed in the renderer coordinate system. As a consequence, the
+scroll was not applied at the right position on the device.
+
+Therefore, convert the coordinate system.
+
+See <https://stackoverflow.com/questions/49111054/how-to-get-mouse-position-on-mouse-wheel-event>.
+Improve decoder stopped event
+
+The syntax was correct, but less readable, and it unnecessarily zeroed
+the fields other than "type".
+
+Create the event properly, from a separate method.
+Simplify scrcpy-server path configuration
+
+The full path of scrcpy-server.jar was partially configured from
+meson.build then concatenated by C code.
+
+Instead, directly write the path in C.
+Remove useless casts to (void *)
+Rename control to controller
+
+The struct decoder is defined in decoder.h.
+
+For naming consistency, define the struct controller in controller.h.
+Update developer documentation for v1.8
+Add me as copyright owner
+Replace android-tools-adb by adb
+
+Here is the description of the adb package in Debian:
+
+> Description: Android Debug Bridge
+>
+> A versatile command line tool that lets you communicate with an
+> emulator instance or connected Android-powered device.
+>
+> This package recommends "android-sdk-platform-tools-common" which
+> contains the udev rules for Android devices. Without this package, adb
+> and fastboot need to be running with root permission.
+
+And android-tools-adb:
+
+> Description: transitional package
+>
+> This is a transitional package. It can safely be removed.
+Improve main() error handling
+
+Parse the command-line arguments first, and do not ignore avformat
+network init failure. At the end, deinit the avformat network.
+Run tests with ASAN enabled
+
+This may capture more errors (like
+e2ef39fae5ffb576cdc4d924cf0b67393138168d).
+Factorize texture creation
+
+SDL_CreateTexture() is called both during initialization and on frame
+size change.
+
+To avoid inconsistent changes to arguments value, factorize them to a
+single function create_texture().
+Add missing include guards
+
+In practice, these headers are included only once, but it's a good
+practice to always use include guards.
+Replace BUILD_DEBUG by NDEBUG
+
+Use the "standard" NDEBUG definition, which is used by assert().
+Do not use return code for thread run function
+
+The decoder sometimes returned a non-zero value on error, but not on
+every path.
+
+Since we never use the value, always return 0 at the end (like in the
+controller).
+Cleanup old code comment
+Add --help
+
+Provide command-line help, with -h/--help option.
+Continue on icon loading failure
+
+If loading the icon from xpm fails, launch scrcpy without window icon.
+
+<https://github.com/Genymobile/scrcpy/issues/539>
+Add recording logs
+
+Log when recording is started and stopped.
+Merge branch 'npes87184:dev' into dev (#254)
+
+Return specific error for missing adb binary on Windows
+Do not try to decode video when EOF is reached
+
+When the video stream socket is closed and read_packey() returns -1,
+av_read_frame() still returns 0.
+
+To detect EOF, check the flag eof_reached in the AVIOContext.
+
+This avoids garbage errors on closing.
+Use custom class Point
+
+The framework class android.graphics.Point cannot be used in unit tests.
+Implement our own Point.
+Fix link error on Windows Subsystem for Linux
+
+Build failed on WSL because of lack of reference to WinMain@16 during
+linking.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/316>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Merge branch 'sdushantha' (pull request #28)
+
+Improve README syntax highlighting.
+Optimize includes
+
+Only include SDL_stdinc.h for SDL_bool, not the whole SDL.h.
+Turn screen on on right-click
+
+The right-click is almost useless on Android, so use it to turn the
+screen on.
+
+Add a new control event type (command) to request the server to turn the
+screen on.
+Merge branch 'master' into dev
+Bump version to 1.2
+Move buffer reader functions to buffer_util.h
+Add cross-compilation scripts for Windows
+
+Build the Windows binary from mingw on Linux, using the official
+prebuilt binaries for ffmpeg, SDL2 and adb.
+
+MSYS2 and all its packaged dll are not necessary anymore.
+Reformat Java code
+
+Reformated by Android studio to match the 150 characters column defined
+in checkstyle.
+Do not print usage on command error
+
+On error, a message is printed. If we print usage afterwards, it's easy
+to miss it.
+Fix Makefile for Windows
+
+The default value of GRADLE is "./gradlew", which is the correct value
+on Linux.
+
+On Windows, it should use gradlew.bat (by calling "gradlew") instead.
+Add missing return 0 in unit test
+Prefix control event constants by namespace
+
+This will avoid conflicts with future device events.
+Move platform specific to sys/
+
+Move unix/ and win/ to sys/, so that we can use android/ for android
+headers without confusion.
+Merge pull request #708 from toddsierens/patch-1
+
+Update WindowManager.java
+Compile with warning_level=2 by default
+Enable sanitizer in debug builds
+
+"make build-debug" will build with ASAN and USAN enabled.
+Fix option "record-format" related short opt
+Do not call codec.stop() on exception
+
+On exception, the codec is not in a state were .stop() can be called.
+Restore the .jar extension on the device side
+
+Commit 3da95b52bd21ae0f4d81ee933caea63b78191deb renamed
+'scrcpy-server.jar' to 'scrcpy-server' to avoid issues on the client
+side.
+
+However, removing the extension may cause issues with app_process, so
+restore the extension only on the device side.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/944>
+Fix read_packet() return value on error or EOF
+
+Fix warning on error or EOF:
+
+> Invalid return value 0 for stream protocol
+
+See <http://git.videolan.org/?p=ffmpeg.git;a=commitdiff;h=a606f27f4c610708fa96e35eed7b7537d3d8f712>.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/333>.
+Implement the --no-window flag
+
+Disable decoder, screen (display), file_handler and controller when
+--no-window is requested.
+
+<https://github.com/Genymobile/scrcpy/pull/418>
+Do not fail on EAGAIN
+
+A call to avcodec_receive_frame() may return AVERROR(EAGAIN) if more
+input is required. This is not an error, do not fail.
+Add option to disable window decoration
+
+Add --window-borderless parameter.
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Terminate event controller thread on EOF
+
+No exception was thrown on EOF, so the event controller did not
+terminate. This leaded to a further InvocationTargetException.
+
+Instead, terminate the event controller on EOF, so that the process
+terminates properly.
+Add missing .PHONY in portable Makefile
+
+The recipe "build-portable" is also the name of the generated directory.
+Add this name to the .PHONY list.
+Remove useless argument
+
+Do not pass any data to the event watcher, it is unused.
+Remove useless else
+
+The if-block ends with a return.
+Fix warning message
+
+Mouse "wheel button" is meaningless :)
+Replace meson subprojects by subdir
+
+Since Meson 0.44, subproject_dir may not be '.' anymore. This implies we
+must move app/ and server/ to a subprojects/ directory, which requires
+to also change some gradle files.
+
+Instead, just use subdir(), with options to disable building of the app
+or the server.
+Replace SDL_bool by bool in tests
+
+Commit dfed1b250e5aada1c0b4c75fbaf54aebc19a92d5 replaced SDL types by
+standard types in sources, but tests were not updated.
+Fix controller cleanup
+
+After commit bfb86ca2c23c29cf768c9216dbfff3a89d5d0b5f, the controller
+was not stopped and destroyed on quit.
+Include config.h to fix HIDPI support
+
+Ref: <https://github.com/Genymobile/scrcpy/issues/829>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Make SKIP_FRAMES a compilation flag
+
+The skip_frames flag was a non-configurable runtime flag. Since it is
+not exposed to the user, there is no need for a (possible) runtime cost.
+
+For testing purpose, we still want it to be configurable, so make it a
+compilation flag.
+Extract argument parsing to specific functions
+
+To avoid a big switch/case, implement the argument parsing logic in
+separate static functions.
+Add feature test macro to declare kill()
+
+Avoid the following warning on some systems:
+
+> warning: implicit declaration of function 'kill'
+> [-Wimplicit-function-declaration]
+Upgrade FFmpeg (4.2.1) for Windows
+
+Include the latest version of FFmpeg in Windows releases.
+Always expect 5 parameters for the server
+
+The client always sends all the arguments, so there is no need to check.
+Add a new option: -n/--no-window
+
+This option will allow scrcpy to record the stream without display.
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Force the server target filename
+
+The server path may be customized using SCRCPY_APK. If its basename is
+different from "scrcpy.apk", it will be pushed with a different name,
+so the execution would fail.
+
+Therefore, force the push target filename.
+Rename "stop" to "interrupt"
+
+The purpose of video_buffer_stop() is to interrupt any blocking call, so
+rename it to video_buffer_interrupt().
+Suggest workaround for error 0xfffffc0e
+
+When the hardware encoder is not able to encode at the given definition,
+it fails with an error 0xfffffc0e.
+
+It is documented in the FAQ:
+<https://github.com/Genymobile/scrcpy/blob/master/FAQ.md#i-get-an-error-could-not-open-video-stream>
+
+But it is better to directly suggest the workaround in the console.
+Prefix server logs
+
+Sometimes, it is not obvious whether a log is generated by the server or
+by the client. Prefix server logs for clarity.
+Do not use device as a singleton
+
+The device instance should be able to store a state (e.g. the maximum
+size requested by the user), so it should not be a singleton.
+added "$" in front of terminal commands
+Remove compilation flag "skip_frames"
+
+It is unused since ebccb9f6cc111e8acfbe10d656cac5c1f1b744a0.
+Fix "terminate process" on Windows
+
+CloseHandle() does not terminate the process. TerminateProcess() does.
+Add option to turn device screen off
+
+In addition to the shortcut (Ctrl+o) to turn the device screen off, add
+a command-line argument to turn it off on start.
+Update platform-tools (29.0.2) for Windows
+
+Include the latest version of adb in Windows releases.
+Fix double-free on error
+
+If writing the recording header fails, do not clean the resources
+immediately to avoid double-free.
+Indent command-line options
+
+Preparse indentation for --turn-screen-off.
+Improve features presentation in README
+Run server tests on release
+Extract event processing out of event_loop()
+
+To avoid too many levels of nested blocks, move the event handling logic
+in a separate function.
+Disable X11 compositor bypass
+
+Compositor bypass is meant for fullscreen games consuming lots of GPU
+resources. For a light app that will usually be windowed, this only
+causes unnecessary compositor suspends, especially visible (and
+annoying) with complying window manager like KWin.
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Rename "shake" to "menu"
+
+The action sends AKEYCODE_MENU, so just name it "menu".
+
+See <https://github.com/Genymobile/scrcpy/pull/85>.
+Add manpage for scrcpy
+Merge pull request #896 from yangfl/upstream
+
+Add manpage for scrcpy
+Always use non-empty arguments
+
+The client passes parameters to the server via "adb shell" arguments.
+
+Use "-" instead of "" when no crop is specified to avoid empty
+arguments, which are not handled the same way on all devices.
+
+Fixed <https://github.com/Genymobile/scrcpy/issues/337>.
+Do not build tests in release mode
+
+Assertions would not be executed.
+
+And as a side effect, it causes "unused variable" warnings.
+Update platform-tools (28.0.0) for Windows
+
+Include the last version of adb in Windows releases.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/224>.
+Merge pull request #595 from taaem/fix_build_fedora
+
+The Java JDK is needed to build the server
+Merge branch 'master' into dev
+Document how to attach a debugger to the server
+Include source root directory
+
+All headers and sources are in src/. To avoid using relative includes
+from subdirectories ("../../"), include the source root directory.
+Rename "touch pointer" to "pointer"
+
+There are only touch pointers now, mouse pointers have been removed.
+Merge pull request #93 from CampbellOwen/patch-1
+
+Add links to FFmpeg and LibSDL2 dependencies
+Kill the server immediately on close
+
+Do not wait 100ms anymore to let the server print any exception: we
+justly want to ignore them.
+
+Moreover, there is no nanosleep() on Windows, so this solve another
+problem.
+Do not transmit MediaCodec flags
+
+Since PTS handling has been fixed, the recorder do not associate a PTS
+to a wrong frame anymore, so PTS of "configuration packets" (which never
+produce a frame), are never read by the recorder. Therefore, there is no
+need to ignore them explicitly, so we can remove the MediaCodec flags
+completely.
+Do not release TCP sockets while still in use
+
+SDLNet_TCP_Close() not only closes, but also release the resources.
+
+Therefore, we must not close the socket if another thread attempts to
+read it.
+
+For that purpose, move socket closing from server_stop() to
+server_destroy().
+Update links to v1.5-fixversion
+
+I forgot to bump version _before_ the release, so I had to make a new
+one which fixes the version string (for scrcpy --help).
+Wrap receiver state into separate struct
+
+For readability, wrap the state of the receiver in a separate struct
+receiver_state.
+Add Korean translation for README and FAQ
+
+PR <https://github.com/Genymobile/scrcpy/pull/934>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Reset current installer process
+
+The current_process field was never reset after an installation is
+complete. As a consequence, installer_stop() attempted to terminate it,
+leading to a warning, at best.
+Merge branch 'master' into dev
+Simplify server_connect_to()
+
+Only use 2 branches, using either forward or remote tunnel.
+Update WindowManager.java
+Rename "convert.h" to "event_converter.h"
+
+The filename gave no hint about what was converted.
+Factorize integer argument parsing
+
+Add util functions for integer parsing (with tests), and factorize
+integer argument parsing to avoid code duplication.
+Fix include recorder.h
+Remove obsolete detail in README
+
+Now that scrcpy-server.jar is found in the same directory as the
+scrcpy executable, using SCRCPY_SERVER_PATH is not particularly useful
+on Windows anymore
+Disable stdout/stderr buffering on Windows
+
+In MSYS2 on Windows, the output is buffered by default. Disable
+buffering to print output immediately.
+
+Note that in cmd.exe, it still prints nothing.
+Support drag&drop a file to transfer it to device
+
+Signed-off-by: npes87184 <npes87184@gmail.com>
+Describe workaround to get output on Windows
+
+Since nothing is printed to the console, we need a way to get the output
+in case of errors.
+
+Describe how in the README.
+Expose High DPI support configuration flag
+
+The High DPI support is enabled by default, so that the renderer use the
+full definition of High DPI screens.
+
+However, there are still mouse coordinates problems on some MacOS having
+High DPI support (but not all), so expose a way to disable it.
+Update links to v1.10 in README and BUILD
+Extract server-related functions
+
+To lighten screen.c, move start_server() and stop_server() to a separate
+file.
+Add instructions to run via Docker
+Return success count in injectText
+
+It will insert as many text as possible now.
+Fix #509, tested on Windows 10 and Arch Linux.
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Fix error message
+Merge pull request #396 from npes87184/master
+
+prepare-dep: use variable for better readability
+Replace Ctrl by Meta for volume shortcuts on MacOS
+
+Ctrl+UP and Ctrl+DOWN are already used by the window manager on MacOS.
+
+Use Cmd key instead (like on VLC).
+Fix memory leak on error
+
+The variable condition was not destroyed on strdup() failure.
+Move workarounds to a separate class
+
+Extract workarounds (currently only one) to a separate class to avoid
+polluting the main code.
+Group scrcpy options into a struct
+
+The scrcpy() function accepts as many parameters as there are options.
+
+To simplify, group all options in a separate struct.
+Decompose accented characters
+
+Characters like 'é' or 'î' are not resolved by getEvents(). For example,
+getEvents("é") returns null.
+
+However, it is possible to decompose them. For example,
+getEvents("\u0301e") returns the events generating "é".
+
+Thank you Philippe! ;)
+Inline lock_util functions
+
+They are just tiny wrappers.
+Fix scrcpy() return value
+
+The scrcpy() function returns a SDL_bool to indicate its success, but
+was initialized to 0 (SDL_FALSE) instead of SDL_TRUE.
+Use size_t for command length
+
+The size of an array should have type size_t.
+Add generic circular buffer
+
+Add a circular buffer implementation, to factorize multiple specific
+queues implementation.
+Enable video output file, with pts set by server
+Bump version to 1.1
+Upgrade SDL (2.0.10) for Windows
+
+Include the latest version of SDL in Windows releases.
+Fix missing installer initialization
+
+The current_process field of struct installer was not initialized.
+Since the installer instance is static, its default value was 0.
+
+The call to installer_stop() then called kill(0, SIGTERM) (on Linux),
+which sent SIGTERM to every process in the process group. In particular,
+the scrcpy process was killed.
+
+As a consequence, the last cleanup steps, like disabling "show touches",
+were not executed.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/183>.
+Indicate that scrcpy also works over TCP/IP
+Merge branch 'master' into dev
+Rename ScrCpyServer to Server
+
+The Server class is in package scrcpy, there is no need to repeat the
+name in the classname.
+Immediately close the server socket on the device
+
+In "adb forward" mode, close the server socket as soon as the client is
+connected.
+
+Even if unlikely to be useful, it allows to run several instances of
+scrcpy also in "adb forward" mode.
+recorder: use av_oformat_next to support older FFmpeg
+
+Signed-off-by: yuchenlin <npes87184@gmail.com>
+Also build "noconsole" binary for Windows
+
+On Windows, an application is either console or gui, it cannot be both.
+
+Scrcpy should be both: it outputs important information to console, but
+we still want to be able to ignore the console and launch it without a
+visible cmd.exe window.
+
+Therefore, build two binaries:
+ - scrcpy.exe
+ - scrcpy-noconsole.exe
+Add shortcuts for physical keys
+
+Add shortcuts for HOME, BACK, APPS, POWER, VOLUME_UP and VOLUME_DOWN.
+Do not call SDL_Quit()
+
+It may crash in i965_dri.so when calling SDL_Quit (probably a driver
+bug). To avoid a segmentation fault, do not call SDL_Quit().
+Initialize eof flag from BufferInfo
+
+Stop encoding if the codec signaled the end of stream.
+
+The eof flag was read, but never written.
+Do not write invalid packet duration
+
+Configuration packets have no PTS. Do not compute a packet duration from
+their PTS.
+
+Fixes recording to mp4 on device rotation.
+Merge pull request #401 from npes87184/dev
+
+input_manager: don't ignore double click event when clicking inside device
+Create process with wide chars on Windows
+
+Windows does not support UTF-8, so pushing a file with non-ASCII
+characters failed.
+
+Convert the UTF-8 command line to a wide characters string and call
+CreateProcessW().
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/422>
+Move frame updating to screen.c
+
+Replace screen_update() by a higher-level screen_update_frame() handling
+the whole frame updating, so that scrcpy.c just call it without managing
+implementation details.
+Make owned serial a pointer-to-non-const
+
+The server owns the serial, so it needs to free it. Therefore, it should
+not be a pointer-to-const.
+Improve key processing readability
+
+The condition "event->type == SDL_KEYDOWN" and the variable
+input_manager->controller are used many times. Replace them by local
+variables to reduce verbosity.
+Fix segfault on empty file recorded
+
+Write the file trailer only if the file header have been written, to
+avoid a segfault in libav.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/918>.
+Rename SHA256SUM to SHA256SUMS
+
+It contains the checksums for several files.
+Add helpers to truncate UTF-8 at code points
+
+This will help to avoid truncating a UTF-8 string in the middle of a
+code point, producing an invalid UTF-8 result.
+Add window icon
+
+Add a bugdroid icon loaded from an XPM.
+Remove unused includes
+
+The struct control_event does not use mutexes, and net.h does not need
+SDL_platform.h.
+Update links to v1.12 in README and BUILD
+Add missing includes
+
+Include string.h and stdio.h explicitly.
+Inject touch events on the server
+
+On receiving an "inject touch" control message, update the local
+pointers state and inject touches.
+Initial commit
+
+Start a new clean history from here.
+Move screen-related code to screen.c
+
+The file scrcpy.c contains too many different things in addition to the
+main logic, so move the screen code to a separate file, screen.c.
+app: add always_on_top
+
+It is very convenient when I play mobile game and watch video at the
+same time.
+
+Tested on Linux mint Cinnamon as well as Windows 10.
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Fix server checkstyle errors
+
+Fix errors reported by:
+
+    gradle -p server check
+Call ninja without changing directory
+
+In build instructions, use:
+
+    ninja -Cx ...
+
+instead of:
+
+    cd x
+    ninja ...
+Change links to wikipedia
+removed "$" and changed Mac OS ---> MacOS
+Fix SDL 2.0.9 for Windows
+
+Add missing version upgrade in cross_winXX.txt files.
+Implement keyboard/mouse control
+
+To control the device from the computer:
+ - retrieve mouse and keyboard SDL events;
+ - convert them to Android events;
+ - serialize them;
+ - send them on the same socket used by the video stream (but in the
+ opposite direction);
+ - deserialize the events on the Android side;
+ - inject them using the InputManager.
+Merge branch 'npes87184:dev' into dev (#236)
+
+check adb runnable before starting scrcpy
+Update DEVELOP.md
+Move switch fullscreen logs
+
+Logs were printed by the caller of switch_fullscreen(). Move them inside
+the function to simplify event handling code.
+Disable "show touches" once window is closed
+
+If --show-touches is set, then the option must be disabled on quit.
+
+Since it executes an adb command, it takes some time, so close the
+window beforehand so that the close window button does not seem
+unresponsive.
+Add instructions to install Java 8 on macOS
+
+And remove gcc from the packages list, clang is available by default.
+Send separate DOWN/UP key events
+
+Shortcuts generated instant DOWN/UP key events. Instead, generate DOWN
+event on Ctrl+key down and UP event on Ctrl+key up.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/166>.
+Bind Home key to MOVE_HOME
+
+On pressing Home key on the computer, move the cursor to the beginning
+of the line instead of going back to the home screen.
+
+<https://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_HOME>
+<https://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_MOVE_HOME>
+
+Fixes (part of) <https://github.com/Genymobile/scrcpy/issues/555>.
+Fix gradle warnings in tests
+Check empty string before strtol()
+
+There is no need to call strtol() if the input string is empty.
+Upgrade FFmpeg (4.1.4) for Windows
+
+Include the latest version of FFmpeg in Windows releases.
+Use one subsection by distribution in README
+
+Now that instructions are given for both Debian/Ubuntu and Fedora, use
+subsections.
+Move control-related code to screencontrol.c
+
+Move the code handling user input from scrcpy.c to a separate file,
+screencontrol.c.
+Use pointers-to-const where relevant
+
+Explicitly declare const a function parameter intended to be read-only.
+Remove unused includes
+
+No mutex is used in decoder.c and stream.c.
+Timeout the server socket connection
+
+Wait no more than 2 seconds for accepting the connection from the
+device, since it blocks the event loop, preventing to react to SIGTERM
+(Ctrl+C).
+Do not disable screensaver
+
+Keep screensaver enabled while scrcpy is running.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/380>.
+Define macros wrappers for logs
+
+Use macros to wrap SDL_Log* functions with the "application" category.
+Remove unused mutex field in decoder
+Update FAQ after v1.1 release
+
+Two issues described in the FAQ have been fixed by V1.1. Remove them
+from the FAQ.
+Fix "natural scrolling"
+
+> Movements down (scroll backward) generate negative y values and up
+> (scroll forward) generate positive y values.
+
+> If direction is SDL_MOUSEWHEEL_FLIPPED the values in x and y will be
+> opposite. Multiply by -1 to change them back.
+
+<https://wiki.libsdl.org/SDL_MouseWheelEvent#Remarks>
+
+The x and y values already take the scrolling configuration into
+account. Reversing the values when the direction is flipped cancels the
+scrolling configuration.
+
+Therefore, just ignore the direction field.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/966>
+Merge pull request #692 from msfjarvis/msf/uprev-dependencies
+
+Upgrade build dependencies
+Merge branch 'record' into dev (#292)
+
+Record screen to file
+Fix meson error: ‘for’ loop initial declarations are only allowed in C99 mode.
+Use the Point class from the framework
+
+Replace our custom Point class by android.graphics.Point.
+Refactor actions calls
+
+The purpose of handle_shortcut() was to group all actions together,
+whether they are initiated from a text input event or a keycode event.
+
+However, it did not handle the case where it was initiated from a mouse
+event (a right-click must turn the screen on), since the action was
+identified by the shortcut char.
+
+Instead, expose one function per action, to be called directly from
+where the event is handled.
+Use _exit() instead of exit() in child process
+
+exit() should not be called from within a child process, since it would
+call functions registered with atexit(), and flush stdio streams. Use
+_exit() instead.
+Bump version to 1.12
+Document ./run script usage
+
+Indicate how to run the app from the build directory in README. It's
+convenient during development.
+Extract bit operations to buffer_util.h
+
+Move util functions to a reusable separate header.
+Fix text input event segfault
+
+The text input control_event was initially designed for mapping
+SDL_TextInputEvent, limited to 32 characters.
+
+For simplicity, the copy/paste feature was implemented using the same
+control_event: it just sends the text to paste.
+
+However, the pasted text might have a length breaking some assumptions:
+ - on the client, the event max-size was smaller than the text
+   max-length,
+ - on the server, the raw buffer storing the events was smaller than the
+   max event size.
+
+Fix these inconsistencies, and encode the length on 2 bytes, to accept
+more than 256 characters.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/10>.
+Add link to FLAG_SECURE in FAQ
+Add unit tests for control event serialization
+
+Test serialization of the 4 types of events (keycode, text, mouse,
+scroll).
+Provide a better URL to document key decomposition
+
+Directly link to the relevant subsection.
+Avoid unnecessary call if display is disabled
+
+If --no-window is passed, there is no need to register an event watcher.
+Move the new avcodec implementation before the old
+
+The API to decode the video frames is different depending on the
+libavcodec version.
+
+Move the new API usage to the #if-block.
+Simplify portable build configuration
+
+To create a portable build (with scrcpy-server.jar accessible from the
+scrcpy directory), replace OVERRIDE_SERVER_PATH by a simple compilation
+flag: PORTABLE.
+
+This paves the way to use more complex rules to determine the path of
+scrcpy-server.jar in portable builds.
+List scrcpy characteristics in README
+
+They were listed in the blog post introducing scrcpy:
+<https://blog.rom1v.com/2018/03/introducing-scrcpy/>
+Avoid server stacktraces on close
+
+On close, the socket is closed by the client, and the server process is
+killed.
+
+This leads to (expected) exceptions, that should not be printed.
+Store queue of PTS for pending frames
+
+Several frames may be read by read_packet() before they are consumed
+(returned by av_read_frame()), so we need to store the PTS of frames in
+order, so that the right PTS is assigned to the right frame.
+Clean up useless const-casts
+
+The function adb_execute() now expects a "const char *const *" parameter
+for the adb command, so there is no need to cast.
+Add missing source files in server Makefile
+
+All classes were still built, but make was not able to detect changes on
+missing files.
+Move server-related code to server.c
+
+The file server.c already existed, but exposed a low-level API. Make it
+higher-level, so that scrcpy.c does not handle server details directly.
+Make macro expansion-safe
+
+Use parentheses to avoid unexpected results.
+
+For example, make:
+
+    2 * SERIALIZED_EVENT_MAX_SIZE
+
+expand to:
+
+    2 * (3 + TEXT_MAX_LENGTH)
+
+instead of:
+
+    2 * 3 + TEXT_MAX_LENGTH
+Merge pull request #261 from npes87184/dev
+
+prevent closing console right after process error in windows
+prepare-dep: use variable for better readability
+
+The arguments are saved to variable when script started. Instead of
+using $1, $2 and $3, we can use these variables.
+
+Signed-off-by: yuchenlin <npes87184@gmail.com>
+Prevent killing unexpected process
+
+A missing initialization (fixed by the previous commit) leaded to kill
+unexpected process.
+
+In order to prevent consequences of similar errors in the future, never
+call kill() with a non-positive PID.
+
+See <https://github.com/Genymobile/scrcpy/issues/182>.
+Replace "cannot" by "could not"
+Reverse horizontal scrolling behavior
+
+The SDL mouse wheel event seems inconsistent between horizontal and
+vertical scrolling.
+
+> Movements to the left generate negative x values and to the right
+> generate positive x values. Movements down (scroll backward) generate
+> negative y values and up (scroll forward) generate positive y values.
+
+<https://wiki.libsdl.org/SDL_MouseWheelEvent#Remarks>
+
+Reverse the horizontal.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/49>.
+Add buffer_write64be()
+
+Add a function to write 64 bits in big-endian from a uint64_t.
+Rename "frames" to "video_buffer"
+
+It better describes the purpose of the structure.
+Rename -n/--no-window to -N/--no-display
+
+The description of scrcpy is "Display and control your Android device".
+We want an option to disable display, another one to disable control.
+
+For naming consistency, name it --no-display.
+
+Also change the shortname to -N, so that we can use -n for --no-control
+later.
+Truncate device name at UTF-8 code point boundary
+
+Just in case.
+Fix expected mouse event sizes
+
+Commit fefb9816a99e6f8fa59befcfb70ba87112f90a8d modified mouse events
+serialization. The server-side parsing was updated to correctly read the
+position, but the expected size of these events was not updated.
+
+As a result, the server might try to parse incomplete events, leading
+to BufferUnderflowException.
+
+Fixes
+<https://github.com/Genymobile/scrcpy/issues/350#issuecomment-456298816>.
+server/meson.build: support relative path for prebuilt_server
+
+If we don't do this trick, the prebuilt_server will be
+../server/[the_user_defined_path]. In general, we will not give an relative path
+based on build directory, which leads to wrong prebuilt_server path.
+
+The building error:
+
+ninja: error: '../scrcpy-server-v1.7.jar', needed by
+'server/scrcpy-server.jar', missing and no known rule to make it
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Process the last video frame
+
+On H.264 stream EOF, the eof_reached flag is set, but av_read_frame()
+still provides a frame, so check the flag only afterwards.
+
+As a side-effect, it also fixes a memory leak (the very last packet was
+not unref).
+Parse XPM without SDL_image
+
+We encounter some problems with SDL2_image on MSYS2 (Windows), so
+implement our own XPM parsing which does not depend on SDL_image.
+
+The input XPM is considered safe (it's in our source repo), so do not
+check XPM format errors. This implies that read_xpm() is not safe to
+call on any unsafe input.
+
+Although less straightforward, use SDL_CreateRGBSurfaceFrom() instead of
+SDL_CreateRGBSurfaceWithFormatFrom() because it is available with SDL
+versions older than 2.0.5.
+Close server socket before killing process
+
+The sockets may be closed and shutdown on server_stop(). This will
+interrupt the stream and controller threads more quickly and gracefully.
+Update FFmpeg (4.0.2) for Windows
+
+Include the last version of FFmpeg in Windows releases.
+Expose application version
+
+Expose scrcpy version via -v or --version.
+Bump version to 1.4
+Make CreateProcess() flags depend on "noconsole"
+
+On Windows, display the output of external commands (adb) when a console
+is available.
+Decode and push frame before recording
+
+Handle display before recording, to reduce latency.
+Uprev Gradle wrapper to latest stable
+
+Signed-off-by: Harsh Shandilya <msfjarvis@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Merge branch 'master' into dev
+Merge branch 'stek29/macos' (#56)
+
+macOS specific README changes
+Do not expose frame rate in ScreenEncoder
+
+The KEY_FRAME_RATE parameter value is necessary for the configuration of
+the encoder, but its actual value does not impact the frame rate (only
+resources used by the encoder).
+
+Therefore, it's an internal detail and should not be exposed by the
+ScreenEncoder class.
+Initialize struct field by field
+
+Initializing with braces initializes the other fields to 0, which is not
+necessary.
+Add test_strquote
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Rename "event" to "message"
+
+After the recent refactorings, a "control event" is not necessarily an
+"event" (it may be a "command"). Similarly, the unique "device event"
+used to send the device clipboard content is more a "reponse" to the
+request from the client than an "event".
+
+Rename both to "message", and rename the message types to better
+describe their intent.
+Avoid division by 0
+
+If the frame_size width or height is 0, just return the current size to
+avoid calculations involving divison by 0.
+Always destroy in reverse order
+
+For consistency and safety, always destroy objects in reverse order they
+were initialized.
+Implement clipboard paste
+
+Paste computer clipboard to the device on Ctrl+v.
+
+The other direction (pasting the device clipboard to the computer) is
+not implemented. It would require a communication channel from the
+device to the computer, other than the socket used by the video stream.
+Separate multi-words filenames by '_'
+
+Rename foobar.ext to foo_bar.ext.
+
+<https://github.com/Genymobile/scrcpy/pull/226#discussion_r209454865>
+Bump version to 1.6
+Add FPS counter
+
+Remove frame counter from scrcpy.c and add a new FPS counter, logging as
+INFO the measured frame rate every second (on new frame).
+Handle condition variable failure
+
+Add condition variables function wrappers to handle unexpected failure.
+Reformat EventController
+
+Reformated by Android Studio.
+Encode video using MediaCodec API
+
+Replace screenrecord execution by manual screen encoding using the
+MediaCodec API.
+
+The "screenrecord" solution had several drawbacks:
+ - screenrecord output is buffered, so tiny frames may not be accessible
+   immediately;
+ - it did not output a frame until the surface changed, leading to a
+   black screen on start;
+ - it is limited to 3 minutes recording, so it needed to be restarted;
+ - screenrecord added black borders in the video when the requested
+   dimensions did not preserve aspect-ratio exactly (sometimes
+   unavoidable since video dimensions must be multiple of 8);
+ - rotation handling was hacky (killing the process and starting a new
+   one).
+
+Handling the encoding manually allows to solve all these problems.
+Make control_event_serialize() return size_t
+
+control_event_serialize() returns the number of bytes written, so the
+type should be size_t.
+Document how to install on Fedora
+Store the recording request in a local bool
+
+This avoids to test explicitly whether options->record_filename is NULL.
+Fix cleanup order
+
+The order of cleanup was not the reverse as the initialization order. As
+a consequence, recorder_destroy() could theoretically be called even if
+recorder_init() failed.
+Remove "turn device screen on" feature
+
+Only keep "turn device screen off" and POWER button.
+
+After we turn the device screen off (with Ctrl+o), turning it back on
+does not always work, and leaves the device in a weird state, where even
+the power button may not be sufficient:
+<https://github.com/Genymobile/scrcpy/issues/175#issuecomment-497946596>
+
+This is not an acceptable behavior, so disable the shortcut to turn the
+physical device screen on. We can use the POWER button (or Ctrl+p)
+instead.
+Require Meson 0.37
+
+Older versions of Meson are too limited, and it's simple to install a
+newer version ("pip3 install meson").
+Update BUILD.md to install adb package
+
+PR <https://github.com/Genymobile/scrcpy/pull/965>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Fix overflow in test
+
+The serialized text is not nul-terminated (its size is explicitely
+provided), but the input text in the event is a nul-terminated string.
+
+The test was failing with ASAN enabled.
+Use net_recv() to read only one byte
+
+Partial read is impossible for 1 byte, so net_recv_all() is useless.
+Add Ctrl+i shortcut to enable/disable FPS counter
+
+Disable FPS counter on start, and use Ctrl+i to enable/disable it.
+Merge branch 'master' into dev
+Log device disconnection
+
+If scrcpy closes due to socket disconnection, log a warning.
+Fix max size default value
+
+Suggested-by: jurkov
+
+Closes <https://github.com/Genymobile/scrcpy/issues/978>
+Extract "scrcpy-server.jar" string
+
+The filename is used at several places.
+Add option to start in fullscreen
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Release controller lock while processing events
+
+Once the controller took a control event, release the mutex before
+processing it, so that the main thread is not blocked to push a new
+event.
+Check surface returned for icon
+
+SDL_CreateRGBSurfaceFrom() may return NULL, causing a segfault.
+
+<https://github.com/Genymobile/scrcpy/issues/539>
+Bump version to 1.10
+Hide services in Device
+
+Expose useful methods directly in Device, without exposing the service
+managers.
+Increase "adb forward" connection attempts
+
+5 seconds might not be sufficient:
+<https://github.com/Genymobile/scrcpy/issues/213>
+
+Increase to 10 seconds (it does not harm).
+Downgrade SDL to 2.0.8 for Windows
+
+Revert "Update SDL (2.0.9) for Windows"
+
+Several users experienced freezes with SDL 2.0.9.
+
+This reverts commit a5787dccd62fe4ff9dc05d597d3aab06da717edd.
+
+See:
+ - <https://github.com/Genymobile/scrcpy/issues/425>
+ - <https://discourse.libsdl.org/t/unstable-frame-rate-unexpectedly/25783>
+Call Looper.prepareMainLooper() to avoid exception
+
+Some devices internally create a Handler when creating an input Surface,
+causing an exception:
+
+> Surface: java.lang.RuntimeException: Can't create handler inside
+> thread that has not called Looper.prepare()
+
+As a workaround, call Looper.prepareMainLooper() beforehand.
+
+Fixes:
+ - <https://github.com/Genymobile/scrcpy/issues/240>
+ - <https://github.com/Genymobile/scrcpy/issues/921>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Update links to v1.8 in README and BUILD
+Remove black borders on double-click
+
+Resize the window to fit the device screen on click on black borders
+(same as Ctrl+x).
+
+Suggested-by: Guillaume Roche <groche@genymobile.com>
+Refactor wrappers for Android SDK classes
+
+Internally, a failure to invoke a method via reflection was partially
+managed using exceptions, partially using a null return value.
+
+Handle all errors at the same place, by not catching
+NoSuchMethodException too early.
+Remove "make" from build dependencies
+
+The project is built with meson+ninja.
+Fix deadlock on exit if SKIP_FRAMES disabled
+
+On exit, the renderer will not consume frames anymore, so signal the
+condition variable to wake up the decoder.
+Use ARRAY_LEN() macro in tests
+Add link to Snap package in README
+
+<https://github.com/Genymobile/scrcpy/issues/523>
+Improve English comment
+
+Replace "implying" by "involving" (both "impliquant" in French).
+Upgrade version to 1.0
+Bump version to 1.3
+Merge pull request #95 from Sea-n/patch-1
+
+Update README.md
+Remove root directory from Windows zip releases
+
+Put the scrcpy files at the root of the zip archive. This avoids an
+unnecessary level of directories when extracting.
+Fix comment about data sent over the socket
+
+We now send the device name in addition to the screen dimensions on the
+socket. Update the comment accordingly.
+Fix required java package for Fedora
+
+The Java JDK is needed to build the server. The relevant Fedora package
+is java-devel, not java.
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Merge pull request #568 from npes87184/dev
+
+Correct return value type in handle_event
+Explain how to install up-to-date meson
+
+On Ubuntu 16.04, meson is 0.29, while scrcpy requires >= 0.37.
+
+Explain how to install a newer version from pip3.
+Remove path argument from cmd_execute()
+
+It is always equal to argv[0] (or not used on Windows).
+Factorize Windows command building
+
+Extract command line building to a separate method.
+Inject mouse events as touchscreen
+
+As a mouse, some clicks on close prositions are sometimes not generated
+on some devices.
+Rename unused field
+
+The flag is used only in the server_start() implementation, there is no
+need to store it in the structure.
+Fix horizontal scrolling constant
+
+Use AXIS_HSCROLL (available since API 12) instead of AXIS_SCROLL (since
+API 26).
+Add link to blog article in README
+Update release checksums in README
+Use generic FIFO queue for recording
+
+Replace the specific recording queue by the new generic FIFO queue
+implementation.
+Present fullscreen option in README
+Send "screen on" command only on mouse down
+
+Avoid to send the command twice, once on mouse down, once on mouse up.
+Add README
+Fix "turn screen off" on Android Q
+
+Call getInternalDisplayToken(), which retrieve the id of the first
+physical display (which is not necessarily 0 anymore).
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/835>
+Merge pull request #920 into dev
+
+Compare server and client version at the start of scrcpy
+server/meson.build: Prevent using input field for directory
+
+This will fix build warning in newer meson.
+Fix #540.
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Update SDL (2.0.9) for Windows
+
+Include the last version of SDL in Windows releases.
+Destroy condition variable on frames destruction
+
+A condition variable was init for the "struct frames", but was never destroyed.
+Update README
+
+Explain how to build, install and run the application.
+Update platform-tools (28.0.1) for Windows
+
+Include the latest version of adb in Windows releases.
+Update links to v1.6 in README and BUILD
+Merge pull request #574 from crow1170/patch-1
+
+Fix dependencies
+Use common pointers for mouse and touch
+
+The mouse is a pointer like any other.
+Use getPhysicalDisplayToken on Anroid Q+ instead of getBuiltInDisplay
+
+This makes the -S (screen off) parameter work on Android Q beta 4
+
+Closes #586
+Remove instrumented test dependencies
+
+The server is not a real Android application, it's just a jar with a
+main method. Instrumented tests are meaningless in this context.
+Remove unnecessary backslash in cbuf
+Fix meizu 16th NPE
+
+Fill AppInfo to avoid NullPointerException on some devices.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/365>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add runtime option to render expired frames
+
+Replace the compilation flag SKIP_FRAMES by a runtime flag to force
+rendering of expired frames. By default, the expired frames are skipped.
+Merge pull request #169 from zopelee/master
+
+Fix meson error: ‘for’ loop initial declarations are only allowed in …
+Add option --max-fps
+
+Add an option to limit the capture frame rate. It only works for devices
+with Android >= 10.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/488>
+Handle all shortcuts in the same function
+
+Shortcuts are sometimes initiated from a keycode event, and sometimes
+from a text input event.
+
+Move the handling to a unique function.
+Add new shortcuts description in help
+
+Document the new shortcuts in the help (scrcpy --help).
+Add stream layer
+
+The decoder initially read from the socket, decoded the video and sent
+the decoded frames to the screen:
+
+              +---------+      +----------+
+  socket ---> | decoder | ---> |  screen  |
+              +---------+      +----------+
+
+The design was simple, but the decoder had several responsabilities.
+
+Then we added the recording feature, so we added a recorder, which
+reused the packets received from the socket managed by the decoder:
+
+                                    +----------+
+                               ---> |  screen  |
+              +---------+     /     +----------+
+  socket ---> | decoder | ----
+              +---------+     \     +----------+
+                               ---> | recorder |
+                                    +----------+
+
+This lack of separation of concerns now have concrete implications: we
+could not (properly) disable the decoder/display to only record the
+video.
+
+Therefore, split the decoder to extract the stream:
+
+                                    +----------+      +----------+
+                               ---> | decoder  | ---> |  screen  |
+              +---------+     /     +----------+      +----------+
+  socket ---> | stream  | ----
+              +---------+     \     +----------+
+                               ---> | recorder |
+                                    +----------+
+
+This will allow to record the stream without decoding the video.
+Rename rotation detection method name
+
+The old name checkRotationChanged() did not suggest that the flag was
+reset.
+Rename maximum_size to max_size
+
+The long option is --max-size, so for consistency, adapt the code
+accordingly.
+Check client and server mismatch
+
+Send client version as first parameter and check it at server start.
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Update manpage for --window-{x,y} options
+Use virtual device id to avoid NPE
+
+Inject mouse events using id -1 (virtual device) instead of 0 which
+does not exist (and causes the InputDevice to be null).
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/962>
+Log user request to quit
+
+Log at debug level user requests to quit.
+Simplify EventController
+
+In handleEvent(), connection.receiveControlEvent() may never return
+null: either it returns a valid ControlEvent, either it throws an
+Exception.
+
+Therefore, there is no need to propagate a flag to indicate whether it
+returned a valid ControlEvent.
+Scale mouse events
+
+The video screen size on the client may differ from the real device
+screen size (e.g. the video stream may be scaled down). As a
+consequence, mouse events must be scaled to match the real device
+coordinates.
+
+For this purpose, make the client send the video screen size along with
+the absolute pointer location, and the server scale the location to
+match the real device size before injecting mouse events.
+Add crop feature
+
+Add an option to crop the screen on the server. This allows to mirror
+only part of the device screen.
+Return non-zero value on connection loss
+
+Make scrscpy to return 0 exit code only in case when the user closes its
+app, otherwise, i.e. in case of connection loss, return 1.
+Merge branch 'dev'
+Merge branch 'dev' into master
+remove redundant semicolon
+
+Signed-off-by: npes87184 <npes87184@gmail.com>
+Update links to v1.3 in README
+Assign PTS to the right frame
+
+The PTS was read from the socket and set as the current one even before
+the frame was consumed, so it could be assigned to the previous frame
+"in advance".
+
+Store the PTS for the current frame and the last PTS read from the
+packet header of the next frame in separate fields.
+
+As a side-effect, this fixes the warning on quit:
+
+> Application provided invalid, non monotonically increasing dts to
+> muxer in stream 0: 17164020 >= 17164020
+Fix aidl option in build_without_gradle.sh
+
+Debian's aidl complains about the missing path for -o option.
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add ninja-build to the packages list to install
+
+The package ninja-build should be installed automatically as a meson
+dependency, but some users need to install a newer meson from pip3, so
+ninja must be installed explicitly.
+Uprev AGP to latest stable
+
+Signed-off-by: Harsh Shandilya <msfjarvis@gmail.com>
+Send frame meta only if recording is enabled
+
+The client needs the PTS for each frame only if recording is enabled.
+Otherwise, the PTS are not necessary, and the protocol is more
+straighforward.
+Fix memory leak on close
+
+The buffer associated to the AVIOContext must be freed.
+Fix leak on server start error
+
+Fail on SDL_strdup() failure, and free the duplicated serial on further
+error.
+Prevent new window opening with CreateProcess()
+
+Executing commands (like "adb push") created a new terminal window on
+Windows. Avoid it.
+Increase the number of connection attempts
+
+In "adb forward" mode, it may take a while before the server socket is
+listening, so increase the number of connection attempts.
+
+See <https://github.com/Genymobile/scrcpy/issues/5#issuecomment-373718551>.
+Fix manpage option parameter format
+
+The parameter for --window-title was not underlined the same way as
+others.
+Make the server unlink itself
+
+To clean up the device, the client executed "adb shell rm" once the
+server was guaranteed to be started (after the connection succeeded).
+
+This implied to track whether the installation state, and failed if an
+additional tunnel was used in "forward" mode:
+<https://github.com/Genymobile/scrcpy/issues/386#issuecomment-453936034>
+
+Instead, make the server unlink itself on start.
+Fix clean recipe in cross Makefile
+
+Make the "clean" recipe also remove the noconsole build directories.
+Merge branch 'master' into dev
+Update links to v1.11 in README and BUILD
+Fix control message reader test
+
+The mouse event test actually tested a key event control message.
+Fix includes windows-specific source
+
+The header strutil.h is two levels above sys/win/command.c, and
+SDL_log.h was missing.
+Move frame swapping logic to frame.c
+
+Expose frames_offer_decoded_frame() and frames_consume_rendered_frame()
+so that callers are not exposed to frame swapping (between the decoding
+and rendering frames) details.
+Enable mouse focus clickthrough only if available
+
+The hint SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH appeared in SDL 2.0.5. Ignore
+it if the SDL version is older.
+Merge branch 'fedora_install' (pull request #29)
+
+Document how to install on Fedora
+Fix function signature
+
+Use void for parameters (this project is in C).
+Fix incorrect comment
+
+Comment had not been updated along with the code.
+Reuse server address
+
+Set SO_REUSEADDR flag to server socket, so that bind() does not fail if
+we restart scrcpy immediately after we closed the previous one.
+Point out that ninja must not be run as root
+
+See https://github.com/Genymobile/scrcpy/issues/335.
+Merge pull request #542 from npes87184/dev
+
+Return success count in injectText
+Fix win32 build
+
+The types size_t and ssize_t are defined on Windows (in MSYS2), so there
+is no need to typedef SIZE_T and SSIZE_T.
+
+Exit code is "unsigned long" both on Windows 32 and 64 bits.
+
+See <https://github.com/Genymobile/scrcpy/issues/46#issuecomment-373603596>.
+Extract DEBUG flag in build_without_gradle.sh
+Add missing static
+
+Some functions in scrcpy.c are not used outside the file, so declare
+them static.
+Destroy mutex if strdup failed
+
+Signed-off-by: npes87184 <npes87184@gmail.com>
+Fix --serial help
+
+Make explicit that --serial excepts a parameter.
+Print adb command on error
+
+When the execution of an adb command fails, print the command. This will
+help to understand what went wrong.
+
+See <https://github.com/Genymobile/scrcpy/issues/530>.
+Sort parameters by letter
+
+For readability, sort the command-line arguments parsing by letter.
+Remove deprecated options from help and manpage
+
+Ref: ff061b4f30c54dedc5073a588c6c697477b805db
+Fix deprecation warning in Java unit test
+Replace SDL_net by custom implementation
+
+SDL_net is not very suitable for scrcpy.
+
+For example, SDLNet_TCP_Accept() is non-blocking, so we have to wrap it
+by calling many SDL_Net-specific functions to make it blocking.
+
+But above all, SDLNet_TCP_Open() is a server socket only when no IP is
+provided; otherwise, it's a client socket. Therefore, it is not possible
+to create a server socket bound to localhost, so it accepts connections
+from anywhere.
+
+This is a problem for scrcpy, because on start, the application listens
+for nearly 1 second until it accepts the first connection, supposedly
+from the device. If someone on the local network manages to connect to
+the server socket first, then they can stream arbitrary H.264 video.
+This may be troublesome, for example during a public presentation ;-)
+
+Provide our own simplified API (net.h) instead, implemented for the
+different platforms.
+Add description for meson options
+
+The descriptions are displayed in the result of:
+
+    mesonconf builddir
+Do not leak the packet data
+
+Oops! The content of the packets were never freed.
+Rename screen -> scrcpy -> main
+
+Rename scrcpy.c to main.c (this file handles the command line parsing),
+and screen.c to scrcpy.c (it exposes the entry point scrcpy()).
+Use the existing constants for device server path
+Merge branch 'arich/addShake' into dev (#85)
+
+Add support for CTRL+S to send hardware "shake" to device
+Ignore duplicate mouse events
+
+In SDL, a touch event may simulate an identical mouse event. Since we
+already handle touch event, ignore these duplicates.
+Remove useless cast
+
+For consistency with mouse button events handling, directly assign from
+Sint32 to Uint16.
+Implement computer-to-device clipboard copy
+
+It was already possible to _paste_ (with Ctrl+v) the content of the
+computer clipboard on the device. Technically, it injects a sequence of
+events to generate the text.
+
+Add a new feature (Ctrl+Shift+v) to copy to the device clipboard
+instead, without injecting the content. Contrary to events injection,
+this preserves the UTF-8 content exactly, so the text is not broken by
+special characters.
+
+<https://github.com/Genymobile/scrcpy/issues/413>
+Add missing include config.h
+
+When config.h is not included, BUILD_DEBUG is not set.
+Fix proc_show_touches warning
+
+In practice, proc_show_touches may not be used uninitialized, since it
+checks the flag options->show_touches, but the compiler can't know that,
+so initialize it to avoid the warning.
+Correct coding style
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Avoid useless variables initialization
+
+Initialize variables only when necessary.
+Recreate codec and display on rotation changed
+
+On some devices, we can reuse the same codec and display, but on some
+others (e.g. Nexus 5X with Android 7.1.2), it crashes on codec.stop()
+with an IllegalStateException.
+
+Therefore, always recreate the codec and display, so that it works on
+all devices.
+Move drag&drop features in README
+
+Present how to install an APK and how to push a file in the "features"
+section (instead of "shortcuts").
+Fix wrong comment in unit test
+Add delay before stopping server
+
+Let some time to print any exception trace before killing it.
+Always use SDL_malloc() and SDL_free()
+
+To avoid mixing SDL_malloc()/SDL_strdup() with free(), or malloc() with
+SDL_free(), always use the SDL version.
+Capture Alt and Meta keys
+
+Alt and Meta keys should not be forwarded to the device. For now, they
+are not used for shortcuts, but they could be.
+Add functions to convert wide char to UTF-8
+
+There was already utf8_to_wide_char(), used to correctly execute
+commands on Windows.
+
+Add the reverse converter: utf8_from_wide_char(). We will need it to
+build the scrcpy-server path based on the executable directory.
+Refactor build system
+
+The client was built with Meson, the server with Gradle, and were run by
+a Makefile.
+
+Add a Meson script for the server (which delegates to Gradle), and a
+parent script to build and install both the client and the server to the
+system, typically with:
+
+    meson --buildtype release build
+    cd build
+    ninja
+    sudo ninja install
+
+In addition, use a separate Makefile to build a "portable" version of
+the application (where the client expects the server to be in the
+current directory). Typically:
+
+    make release-portable
+    cd dist/scrcpy
+    ./scrcpy
+
+This is especially useful for Windows builds, which are not "installed".
+Move all compat ifdefs definitions to compat.h
+
+This allows to give a proper name to features requirements.
+Update links to v1.4 in README and BUILD
+Do not handle system-specific values in command.c
+
+The common command.c handled process errors from system-specific int
+values (errno).
+
+Rather, expose a new enum process_result to handle error cause in a
+generic way.
+Cache managers in ServiceManager
+
+To guarantee that we instantiate services only one, cache the value the
+first time.
+Make owned serial a pointer-to-non-const
+
+The file handler owns the serial, so it needs to free it. Therefore, it
+should not be a pointer-to-const.
+Explicitly use ISO C11
+
+ISO C99 doesn't support unnamed structs/unions.
+Merge branch 'npes87184:push_file_to_sdcard' into dev (#226)
+
+support drag & drop file to device /sdcard
+Remove deprecated Arch Linux package
+
+The `scrcpy-prebuiltserver` has been deprecated in favor of the `scrcpy`
+package.
+
+<https://aur.archlinux.org/cgit/aur.git/commit/?h=scrcpy-prebuiltserver&id=2ef4359b2e45fc278a191fae014d381b486ffcfe>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Reorganize features in README
+Add unit tests for control events serialization
+
+Add missing tests for serialization and deserialization of control
+events.
+Use const pointers when possible
+
+Sending data only require to read the input buffer, so declare it const.
+Log socket errors
+
+Do not silently ignore close() and shutdown() errors, and use perror()
+to get the errno.
+Update manpage for --window-borderless option
+Include config.h everywhere
+
+Ref: <https://github.com/Genymobile/scrcpy/issues/829>
+
+Suggested-by: Louis Kruger <louisk@gmail.com>
+Merge branch 'philippsandhaus:master' into dev (#252)
+
+Added new command line parameter to start in fullscreen
+Improve startup time
+
+On startup, the client has to:
+ 1. listen on a port
+ 2. push and start the server to the device
+ 3. wait for the server to connect (accept)
+ 4. read device name and size
+ 5. initialize SDL
+ 6. initialize the window and renderer
+ 7. show the window
+
+From the execution of the app_process command to start the server on the
+device, to the execution of the java main method, it takes ~800ms. As a
+consequence, step 3 also takes ~800ms on the client.
+
+Once complete, the client initializes SDL, which takes ~500ms.
+
+These two expensive actions are executed sequentially:
+
+                     HOST              DEVICE
+listen on port        |                  |
+push/start the server |----------------->|| app_process loads the jar
+accept the connection .   ^              ||
+                      .   |              ||
+                      .   | WASTE        ||
+                      .   |  OF          ||
+                      .   | TIME         ||
+                      .   |              ||
+                      .   |              ||
+                      .   v              X execution of our java main
+connection accepted   |<-----------------| connect to the host
+init SDL             ||                  |
+                     || ,----------------| send frames
+                     || |,---------------|
+                     || ||,--------------|
+                     || |||,-------------|
+                     || ||||,------------|
+init window/renderer  | |||||,-----------|
+display frames        |<++++++-----------|
+(many frames skipped)
+
+The rationale for step 3 occuring before step 5 is that initializing
+SDL replaces the SIGTERM handler to receive the event in the event loop,
+so pressing Ctrl+C during step 5 would not work (since it blocks the
+event loop).
+
+But this is not so important; let's parallelize the SDL initialization
+with the app_process execution (we'll just add a timeout to the
+connection):
+
+                     HOST              DEVICE
+listen on port        |                  |
+push/start the server |----------------->||app_process loads the jar
+init SDL             ||                  ||
+                     ||                  ||
+                     ||                  ||
+                     ||                  ||
+                     ||                  ||
+                     ||                  ||
+accept the connection .                  ||
+                      .                  X execution of our java main
+connection accepted   |<-----------------| connect to the host
+init window/renderer  |                  |
+display frames        |<-----------------| send frames
+                      |<-----------------|
+
+In addition, show the window only once the first frame is available to
+avoid flickering (opening a black window for 100~200ms).
+
+Note: the window and renderer are initialized after the connection is
+accepted because they use the device information received from the
+device.
+Merge branch 'master' into dev
+Add empty lines around code blocks
+
+And fix spaces (do not randomly use non-breaking spaces for
+indentation).
+Fix switch/case code style
+
+For readability and consistency, indent case statatements, and remove
+unnecessary additional blocks.
+Write header file with correct extradata
+
+When recording, the header must be written with extradata set to the
+content of the very first packet.
+
+Suggested-by: Steve Lhomme <robux4@ycbcr.xyz>
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/351>
+Fixes <https://github.com/Genymobile/scrcpy/issues/416>
+Indent command-line options
+
+Prepare indentation for --render-expired-frames.
+Upgrade gradle
+Document copy-paste and --prefer-text in README
+Add links to AUR packages in README
+Rename --output-file to --record
+
+To record the screen to a local file:
+
+    scrcpy --record file.mp4
+Do not call deprecated av_register_all()
+
+av_register_all() is deprecated in FFmpeg since this commit:
+<http://git.videolan.org/?p=ffmpeg.git;a=commitdiff;h=0694d8702421e7aff1340038559c438b61bb30dd>
+
+It is now useless to call it:
+<https://ffmpeg.org/pipermail/ffmpeg-devel/2018-February/225051.html>
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/203>.
+Avoid partial header reads
+
+Use net_recv_all() to avoid partial reads for the "meta" header (this
+would break the whole stream).
+Rename variable names "event" to "msg"
+
+Some variable names had not been renamed when "event" was renamed to
+"message" (28980bbc90ab93cf61bdc4b36d2448b8cebbb7df).
+installer -> file_handler
+
+Signed-off-by: npes87184 <npes87184@gmail.com>
+Detect failure of device information read
+
+If the received data is smaller than the device information size, then
+something is wrong.
+Remove AINPUT_SOURCE_ANY value
+
+In the Android input header file, an enum has a value taking more than
+31 bits, leading to the following warning:
+
+    ISO C restricts enumerator values to range of ‘int’
+
+Since we don't use it, remove it.
+Fix dependencies
+
+Some missing or misspelled dependencies. Checked on Ubuntu 19.04.
+Reword Ctrl+x description
+
+Pressing Ctrl+x resizes the window to remove black borders, "optimal" is
+not well-defined.
+Fix windows build
+
+Utilities have been moved to util/, but includes had not been updated
+in Windows-specific files.
+
+Ref: dfd0707a2925e9569aaa2ae6b88b161a12376a49
+Add an option to enable "show touches"
+
+Add -t/--show-touches option to show physical touches while scrcpy is
+running.
+
+See <https://github.com/Genymobile/scrcpy/issues/96>.
+Update DEVELOP after recent refactorings
+Fix segfault on recording with old FFmpeg
+
+The AVPacket fields side_data and side_data_elems were not initialized
+by av_packet_ref() in old FFmpeg versions (prior to [1]).
+
+As a consequence, on av_packet_unref(), side_data was freed, causing a
+segfault.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/707>
+
+[1]: <http://git.videolan.org/gitweb.cgi/ffmpeg.git/?p=ffmpeg.git;a=commitdiff;h=3b4026e15110547892d5d770b6b43c9e34df458f>
+Extract argument parsing
+
+Move argument parsing to a separate method.
+Update code style
+
+Limit source code to 80 chars, and declare functions return type and
+modifiers on a separate line.
+
+This allows to avoid very long lines, and all function names are
+aligned.
+
+(We do this on VLC, and I like it.)
+Use long command-line options
+
+In addition to the short form (e.g. "-p"), add the long form ("--port").
+Log characters failed to be injected
+
+Some characters may not be injected (e.g. '\r`). Log them instead of
+ignoring them silently.
+Reduce latency by 1 frame
+
+To packetize the H.264 raw stream, av_parser_parse2() (called by
+av_read_frame()) knows that it has received a full frame only after it
+has received some data for the next frame. As a consequence, the client
+always waited until the next frame before sending the current frame to
+the decoder!
+
+On the device side, we know packets boundaries. To reduce latency,
+make the device always transmit the "frame meta" to packetize the stream
+manually (it was already implemented to send PTS, but only enabled on
+recording).
+
+On the client side, replace av_read_frame() by manual packetizing and
+parsing.
+
+<https://stackoverflow.com/questions/50682518/replacing-av-read-frame-to-reduce-delay>
+<https://trac.ffmpeg.org/ticket/3354>
+Update FFmpeg (4.1) for Windows
+
+Include the last version of FFmpeg in Windows releases.
+Improve comment
+
+Rephrase to simplify and add a link to the issue.
+Handle mouse events outside device screen
+
+Mouse events position were unsigned (so negative values could not be
+handled properly).
+
+To avoid issues with negative values, mouse events outside the device
+screen were ignored (commit a7fe9ad779057f7a2698fc1769dce3c3786993ee).
+
+But as a consequence, drag&drop were "broken" if the "drop" occurred
+outside the device screen.
+
+Instead, use signed 32-bits to store the position, and forward events
+outside the device screen.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/357>.
+Improve dependencies in README
+
+Document server and client dependencies separately, to avoid unneeded
+packages installation when building using the prebuilt server.
+
+Also remove "zip", since it's only used for building a portable version
+(which is not documented in README).
+Map numpad ENTER key
+
+Forward numpad ENTER key to the device.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/117>.
+Add tests for strutil
+
+Test our custom string handling functions.
+Rename the server scrcpy-server.jar
+
+The server is built as an APK to simplify the build, but in fact this is
+a simple jar (it is not even signed).
+
+In order to avoid confusion, rename it to .jar, so that users do not try
+to "adb install" it.
+
+Also rename it from "scrcpy" to "scrcpy-server" to distinguish from the
+client-side.
+Add option to mirror in read-only
+
+Add an option to disable device control: -n/--no-control.
+Fix memory leak on error
+
+On decode error, unref the packet.
+Log to android logger and stdout/stderr
+Regroup Windows-ifdefs in command.h
+Rescale packet timestamp to container time base
+
+Some containers force their own time base. For example, matroska
+overwrite time_base to (AVRational) {1, 1000}.
+
+Therefore, rescale our packet timestamps to the output stream time base.
+
+Suggested-by: Steve Lhomme <robux4@ycbcr.xyz>
+Expose skip_frames as a build option
+
+It can be initially configured by:
+
+    meson builddir -Dskip_frames=false
+
+Or on an existing builddir by:
+
+    mesonconf builddir -Dskip_frames=false
+Format meson.build for readability
+Explicitly pass control flag to input manager
+
+Replace the "global" control flag in the input_manager by a function
+parameter to make explicit that the behavior depends whether
+--no-control has been set.
+Bump version to 1.11
+Fix mouse events conversion
+
+The conversion from SDL mouse state to Android mouse state used wrong
+constants as mask.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/635>
+Properly clean up on exit
+
+The SDL clean up does not crash anymore on exit, probably since the
+memory corruption caused by calling SDLNet_TCP_Close() too early has
+been resolved.
+Merge pull request #587 from zzndb/patch-1
+Merge pull request #94 from pierlon/pierlon-patch-1
+
+Add instructions to run via Docker
+Simplify SDL_assert() calls
+
+SDL_assert() already prevents "unused variable" warnings.
+Use explicit output parameter for skipped frame
+
+The function video_buffer_offer_decoded_frame() returned a bool to
+indicate whether the previous frame had been consumed.
+
+This was confusing, because we could expect the returned bool report
+whether the action succeeded.
+
+Make the semantic explicit by using an output parameter.
+
+Also revert the flag (report if the frame has been skipped instead of
+consumed) to avoid confusion for the first frame (the previous is
+neither skipped nor consumed because there is no previous frame).
+Use specific error for missing binary on Windows
+
+Signed-off-by: yuchenlin <npes87184@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Stop stream immediately on quit
+
+If the stream is stopped, av_read_frame() will be woken up and yield a
+corrupted packet. Do not try to decode or record it.
+Add a note to allow simulating input in README
+Enable high dpi support
+
+Use high DPI if available.
+
+Note that on Mac OS X, setting this flag is not sufficient:
+
+> On Apple's OS X you must set the NSHighResolutionCapable Info.plist
+> property to YES, otherwise you will not receive a High DPI OpenGL
+> display.
+
+<https://wiki.libsdl.org/SDL_CreateWindow#flags>
+Unlock mutex on screen update failure
+
+The mutex was not unlocked on all code paths.
+Turn screen on on start
+
+When starting scrcpy, immediately turn the screen on.
+Prevent to turn screen off if no control
+
+If --no-control is set, then the controller is not initialized (both in
+the client and the server), so it is not possible to control the device
+to turn its screen off.
+
+See <https://github.com/Genymobile/scrcpy/issues/608>.
+Add more consts
+
+Some decoder and recorder functions must not write to AVCodec and
+AVPacket.
+Update links to v1.7 in README and BUILD
+Unref last packet on exit
+Document the step to clone the project
+
+This is not obvious to everyone, especially non-developers.
+Send device name on the socket
+
+Make the server send the device name along with the width and height, so
+that the client may use it as the window title.
+Rename "build_" to "compile_"
+
+Recent versions of meson complain about an option having name starting
+with "build_":
+
+> DEPRECATION: Option uses prefix "build_", which is reserved for Meson.
+> This will become an error in the future.
+
+Use "compile_" instead.
+Forward FFmpeg logs
+
+FFmpeg logs can be useful to understand the cause of issues.
+Avoid additional buffer copy in userspace
+
+Directly send the data from MediaCodec buffers to the LocalSocket,
+without an intermediate copy in userspace.
+Prevent socket leak on error
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Disable portable build by default
+
+The default value of a boolean meson option is true. We want
+non-portable build by default.
+Use meson to configure default values
+
+Make meson generate config.h with configured values.
+Rename variable for consistency
+
+Use suffix "Field" for fields variables.
+Support recording to MKV
+
+Implement recording to Matroska files.
+
+The format to use is determined by the option -F/--record-format if set,
+or by the file extension (".mp4" or ".mkv").
+Store serial in server instance
+
+The serial is needed for many server actions, but this is an
+implementation detail, so the caller should not have to provide it on
+every call.
+
+Instead, store the serial in the server instance on server_start().
+
+This paves the way to implement the "adb forward" fallback properly.
+Clarify adb requirements
+
+Since _scrcpy_ also supports `adb forward`, remove the part about `adb
+reverse`.
+
+Make explicit that _adb_ is included in the prebuilt application for
+Windows (many users manually download the platform-tools for no reason).
+Add link to the article for v1.1 in README
+Merge mouse and touch events
+
+Both are handled the very same way on the device.
+Register uncaught exception handler
+
+Never miss an exception by using an uncaught exception handler.
+Make request_queue functions static
+
+These functions are local to file_handler.c.
+Update links to v1.2 in README
+input_manager: fix potential memory leak on text
+
+Fix potential memory leak when controller_push_event failed.
+
+Signed-off-by: yuchenlin <npes87184@gmail.com>
+Add scrcpy version in recorded video metadata
+
+It might help to understand problems in recorded videos.
+Upgrade tarketSdkVersion to 29
+
+This fixes a lint warning.
+Inject button state for touch/mouse events
+
+The buttons state was forwarded, but ignored by the server.
+Merge pull request #967 into dev
+
+Add some tests
+
+<https://github.com/Genymobile/scrcpy/pull/967>
+Add developer documentation
+
+And update README.
+Map middle-click to HOME
+
+Middle-click is useless in practice. Use it for HOME.
+Improve startup time when show_touches is enabled
+
+Enabling "show touches" involves the execution of an adb command, which
+takes some time.
+
+In order to parallelize, execute the command as soon as possible, but
+reap the process only once everything is initialized.
+Merge branch 'master' into dev
+Fix comment typo
+
+Replace "at network level" by "at the network level".
+Support paths containing spaces on Windows
+
+Quote the arguments of "adb push" to support paths which contain spaces
+on Windows.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/288>.
+Merge pull request #310 from npes87184/master
+
+fix text memory leak
+Add release script
+
+Add a script to generate the whole release properly.
+
+It first builds locally in release mode, then execute tests. Then it
+builds archives for Windows. Finally, it puts all release files (Windows
+archives, prebuilt server and checksums) in a separate release
+directory.
+Upgrade gradle
+Workaround continuous resizing on Windows/MacOS
+
+On Windows and MacOS, resizing blocks the event loop, so resizing events
+are not triggered:
+ - <https://bugzilla.libsdl.org/show_bug.cgi?id=2077>
+ - <https://stackoverflow.com/a/40693139/1987178>
+
+As a workaround, register an event watcher to render the screen from
+another thread.
+
+Since the whole event loop is blocked during resizing, the screen
+content is not refreshed (on Windows and MacOS) until resizing ends.
+Fix cbuf documentation
+Handle resized video stream
+
+Accept a parameter to limit the video size.
+
+For instance, with "-m 960", the great side of the video will be scaled
+down to 960 (if necessary), while the other side will be scaled down so
+that the aspect ratio is preserved. Both dimensions must be a multiple
+of 8, so black bands might be added, and the mouse positions must be
+computed accordingly.
+Expose device serial as an optional argument
+
+The device serial was provided as a positional argument:
+
+    scrcpy 0123456789abcdef
+
+Instead, expose it as an optional argument, -s or --serial:
+
+    scrcpy -s 0123456789abcdef
+
+This avoids inconsistency between platforms when the positional
+argument is passed before the options (which is undefined).
+Document how to make a portable build on Windows
+
+On MSYS2, ./gradlew does not work as expected, so use its absolute path.
+Always invoke gradle except as root
+
+The custom target used to invoke Gradle from Meson should always
+be built, otherwise, the server would not be rebuilt on source changes.
+
+However, when enabling "build_always", gradle is invoked as root on
+"sudo ninja install" after "ninja", so it downloads the whole Gradle
+world into /root/.gradle.
+
+To avoid the problem, just do not call gradle if the effective user id
+is 0.
+Do not queue invalid PTS
+
+Configuration packets produced by MediaCodec have no valid PTS, and do
+not produce frame. Do not queue their (invalid) PTS not to break the
+matching between frames and their PTS.
+Bump version to 1.12.1
+Enable link-time optimization for release
+
+Because why not.
+Fix rotation bug in fullscreen mode on X11
+
+On rotation, scrcpy resize the window to match the new rotation.
+However, in fullscreen mode, setting the window size does not change the
+windowed size on X11, so the behavior is incorrect.
+
+To avoid the problem, apply the resize only after fullscreen is
+disabled.
+Improve framerate counting
+
+The FPS counter was called only on new frames, so it could not print
+values regularly, especially when there are very few FPS (when the
+device surface does not change).
+
+To the extreme, it was never able to display 0 fps.
+
+Add a separate thread to print framerate every second.
+Add debug log for shortcuts
+
+Add a debug log for every succeeded shortcut action.
+Explain how to install adb on Mac OS
+
+The package scrcpy from Homebrew does not install adb.
+Extract control event string serialization
+
+A string is serialized as a length (2 bytes) followed by the string data
+(non nul-terminated).
+
+For now, it is used only once, but we will need to serialize strings in
+other events.
+Unref the packet on error
+
+Do not leak the packet data on error.
+Close socket on error
+
+Suggested-by: barry-ran
+
+<https://github.com/Genymobile/scrcpy/issues/607>
+Remove useless forward declarations
+
+The required headers are included anyway.
+Add shortcut to resize to ratio 1:1
+
+Make Ctrl+g resize the window to the size of the video (pixel-perfect).
+Add README section explaining --turn-screen-off
+Add device event sender
+
+Create a separate component to send device events, managed by the
+controller.
+Add missing include for lock_util.h
+
+lock_util.c did not include lock_util.h. This was catched by the gcc
+option -Wmissing-prototypes.
+Disable server controller if --no-control
+
+If --no-control is disabled, there is no need for a controller.
+
+It also avoids to power on the device on start if control is disabled.
+Update links to v1.9 in README and BUILD
+Map right-click to BACK if screen is on
+
+Right-click was used to turn the screen on. It did nothing when the
+screen was already on.
+
+Instead, in that case, press BACK (like Vysor).
+
+Suggested by: <https://www.reddit.com/r/Android/comments/834zmr/introducing_scrcpy_an_app_to_display_and_control/dvfueft/>
+Rename SCRCPY_SERVER_JAR to SCRCPY_SERVER_PATH
+
+The server is currently a JAR, but it may ba an APK or a DEX, so the
+variable name should not contain the type.
+
+Rename the environment variable, the Meson options and the C
+definitions.
+Work around Os.write() not updating position
+
+ByteBuffer position is not updated as expected by Os.write() on old
+Android versions. Count the remaining bytes manually.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/291>.
+Log with category APPLICATION
+
+All our logs should use APPLICATION category. The logs for other
+categories are not printed by default under the "critical" level.
+input_manager: don't ignore double click event when clicking inside device
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Fix recording with old decoding/encoding API
+
+The deprecated avcodec_decode_video2() should always the whole packet,
+so there is no need to loop (cf doc/examples/demuxing_decoding.c in
+FFmpeg).
+
+This hack changed the packet size and data pointer. This broke recording
+which used the same packet.
+Fix checkstyle warning
+
+Checkstyle wants a specific order of imports.
+Turn screen on in control()
+
+Turning the screen on is semantically associated to control(): only
+creating the EventController object should not turn the screen on.
+Allocate extradata with av_malloc()
+
+The extradata buffer is owned by libav, so it must be allocated with
+av_malloc(), not SDL_malloc().
+
+This fixes a crash on Windows during avformat_free_context().
+Update platform-tools (29.0.1) for Windows
+
+Include the latest version of adb in Windows releases.
+Keep screen info in cache
+
+Currently, we only use screen information (width, height, rotation)
+once at initialization, to send the device size to the client.
+
+To be able to scale mouse events, make it accessible in memory. For this
+purpose, replace the "static" DeviceUtil to a singleton Device, and
+update it on every screen rotation.
+Quote apk path on Windows
+
+Windows will parse the string, so the local name must be quoted.
+Handle alpha and space chars as raw events
+
+To handle special chars, text is handled as text input instead of key
+events. However, this breaks the separation of DOWN and UP key events.
+
+As a compromise, send letters and space as key events, to preserve
+original DOWN/UP events, but send other text input events as text, to be
+able to send "special" characters.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/87>.
+
+Suggested-by: pete1414
+Suggested-by: King-Slide <kingslide@gmail.com>
+Add clipboard logs
+
+Synchronizing local and device clipboards in invisible. Add INFO logs
+on success.
+Add log verbose macro
+
+This was the only log priority missing.
+Merge pull request #225 from npes87184/master
+
+remove redundant semicolon
+Truncate UTF-8 properly
+
+This will avoid to produce invalid UTF-8 results (although unlikely).
+Implement device-to-computer clipboard copy
+
+On Ctrl+C:
+ - the client sends a GET_CLIPBOARD command to the device;
+ - the device retrieve its current clipboard text and sends it in a
+   GET_CLIPBOARD device event;
+ - the client sets this text as the system clipboard text, so that it
+   can be pasted in another application.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/145>
+Add cond_wait_timeout()
+
+Add a "timed out" version of cond_wait().
+Adapt copy-paste methods for Android 10
+
+The methods getPrimaryClip() and setPrimaryClip() expect an additional
+parameter since Android 10.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/796>.
+Remove the "adb reverse" tunnel immediately
+
+As soon as we accepted a connection, we can remove the "adb reverse"
+tunnel.
+Terminate the device process gracefully
+
+Call shutdown() on the device socket to make the device process finish
+its execution quickly and gracefully, without killing it.
+Ignore keycodes generating unwanted events
+
+Ctrl, Alt, Shift and Meta should not be transmitted to the Android
+device: they may generate unwanted events. For instance, resizing the
+window using Alt+click will generate an Alt event which may open a menu
+on the device.
+
+All keycodes that generate a text input must also be excluded, to avoid
+the text input to be written twice.
+Shutdown sockets before closing
+
+The server socket does not release the port it was listening for if we
+just close it: we must also shutdown it.
+Merge pull request #695 from schwabe/schwabe/fix_null_queue
+
+Fix building on OS X (missing NULL in queue.h)
+Document APK drag & drop
+
+Add the drag & drop shortcut for installing an APK file to the README
+and the help.
+Add FAQ section about KWin crash
+
+Link to the workaround to keep the compositor enabled while _scrcpy_ is
+running.
+Accept prebuilt server
+
+Expose a 'prebuilt_server' option to pass the path of the prebuilt
+binary, so that the build does not require Android SDK.
+
+Usage:
+
+    meson builddir -Dprebuilt_server=/tmp/my_prebuilt_server.jar
+Update README and FAQ for the new Windows releases
+
+Document how to generate a Windows release from Linux.
+
+It solves the "no output" issue on Windows, so update the FAQ.
+Initialize queue "last" field
+
+The compiler is not always able to see that "last" is always initialized
+before being used, so always initialize it.
+Add option --window-title
+
+Add an option to set a custom window title.
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Ignore mouse events outside device screen
+
+Never create a "struct point" with a position possibly outside the
+device screen (i.e. in the black borders area), and do not transmit such
+events.
+
+This fixes an assertion failure on mouse wheel events outside the device
+screen area.
+Drag and drop to install apk files from computer
+
+<https://github.com/Genymobile/scrcpy/pull/133>
+Document 32 bits packages Windows in README
+
+To build for Windows 32 bits, use the i686 packages instead.
+Remove empty line
+Fix help for --window-width and --window-height
+
+The default value is 0 (automatic), not -1.
+tests: fix test_control_event_serialize
+
+commit fefb9816a changed the protocol, fix the related testing case.
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Make owned filename a pointer-to-non-const
+
+The file handler owns the filename string, so it needs to free it.
+Therefore, it should not be a pointer-to-const.
+Add "make run"
+
+To run the app during development, add a recipe "run" to the Makefile.
+Log "new texture" at INFO level
+
+The "initial texture" is logged at INFO level. For consistency, log "new
+texture" at the same level.
+Remove obsolete explanation in FAQ
+
+Issue 9 was about stdout/stderr not printed in Windows console. This is
+solved since the Windows version is cross-compiled from Linux.
+Initialize Application object to avoid NPE
+
+When an ApplicationInfo is set (commit
+90293240cc622bb58cb1de741f86cbc0889c03e8), some devices (Nvidia Shield
+TV) attempt to access the Application object, causing a
+NullPointerException.
+
+As a workaround, initialize an Application object.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/940>
+Extract shortcut actions to separate functions
+
+To simplify event handling code, move all actions to separate functions.
+Always release output buffer
+
+If rotation changed, the dequeued output buffer was never released. Move
+it to a finally block to avoid the leak.
+Group server params in a struct
+
+Starting the server requires more and more parameters. For clarity,
+group them in a struct.
+Remove unused import
+
+Introduced by the previous commit.
+Replace Uint32 by int to fix warnings in tinyxpm
+Limit bitrate range to 31 bits integer
+
+A proper solution could be to use "long long" instead (guaranteed to be
+at least 64 bits), but it adds its own problems (e.g. "%lld" is not
+supported as a printf format on all platforms).
+
+In practice, we don't need such high values, so keep it simple.
+
+Fixes #995 <https://github.com/Genymobile/scrcpy/issues/995>
+Merge branch 'master' into dev
+Add note about Ctrl+C on Windows while recording
+
+Ctrl+C kills the app on Windows, so the recorded file is broken.
+Merge pull request #412 from npes87184/dev
+
+app: add always_on_top
+Convert server to an Android project
+
+To simplify the device server-side build, use gradle to create an APK,
+even if we use it as a simple jar, by running its main() method.

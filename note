@@ -1,0 +1,2 @@
+需要制作vocab.txt，
+bert的 BertTokenizer.from_pretrained('./Model/') 可以自己做token，Model为vocab所在的目录

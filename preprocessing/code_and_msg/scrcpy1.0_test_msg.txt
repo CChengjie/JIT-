@@ -1,0 +1,1518 @@
+Mention mipmapping in FAQ
+Remove unused field
+
+Fixes #1775 <https://github.com/Genymobile/scrcpy/issues/1775>
+
+Reported-by: lordnn
+Bump version to 1.17
+List available encoders on invalid name specified
+
+If an invalid encoder name is given via the --encoder option, list all
+the H.264 encoders available on the device.
+Mention Ubuntu 20.04 package
+
+Ubuntu 20.04 has been released today, and scrcpy is available in their
+repositories: <https://packages.ubuntu.com/focal/scrcpy>
+Remap event positions on rotated display
+
+If the display is rotated, the position of clicks must be adapted.
+Upgrade JUnit to 4.13
+Use Ctrl for all shortcuts
+
+Remove the Cmd modifier on macOS, which was possible only for some
+shortcuts but not all.
+
+This paves the way to make the shortcut modifier customizable.
+Update to AGP 3.6.2
+
+Signed-off-by: Harsh Shandilya <me@msfjarvis.dev>
+Rename window size functions for clarity
+
+Now, get_window_size() returns the current window size (fullscreen or
+not), while get_windowed_window_size() always returned the windowed size
+(the size when fullscreen is disabled).
+Warn on ignored touch event
+
+In theory, this was expected to only happen when a touch event is sent
+just before the device is rotated, but some devices do not respect the
+encoding size, causing an unexpected mismatch.
+
+Refs #1518 <https://github.com/Genymobile/scrcpy/issues/1518>
+Pause on error from a wrapper script
+
+On Windows, scrcpy paused on error before exiting to give the user a
+chance to see the user message.
+
+This was a hack and causes issues when using scrcpy from batch scripts.
+
+Disable this pause from the scrcpy binary, and provide a batch wrapper
+(scrcpy-console.bat) to pause on error.
+
+Fixes #1875 <https://github.com/Genymobile/scrcpy/issues/1875>
+Add missing file in build_without_gradle.sh
+
+Fixes #1481 <https://github.com/Genymobile/scrcpy/issues/1481>
+PR #1482 <https://github.com/Genymobile/scrcpy/pull/1482>
+
+Signed-off-by: Louis Leseur <louis.leseur@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add option for disabling screensaver
+
+PR #1502 <https://github.com/Genymobile/scrcpy/pull/1502>
+Fixes #1370 <https://github.com/Genymobile/scrcpy/issues/1370>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add unit test for big clipboard device message
+
+Test clipboard synchronization from the device to the computer.
+Use MediaFormat constant for MIME type
+
+Replace "video/avc" by MIMETYPE_VIDEO_AVC.
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Do not crash on missing clipboard manager
+
+Some devices have no clipboard manager.
+
+In that case, do not try to enable clipboard synchronization to avoid
+a crash.
+
+Fixes #1440 <https://github.com/Genymobile/scrcpy/issues/1440>
+Fixes #1556 <https://github.com/Genymobile/scrcpy/issues/1556>
+Get env in windows correctly
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Improve linguistic
+
+PR #1543 <https://github.com/Genymobile/scrcpy/pull/1543>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Use <kbd> HTML tag for keys
+
+It's prettyier in a browser.
+Make message buffer static
+
+Now that the message max size is 256k, do not put the buffer on the
+stack.
+Replace SDL_Atomic by stdatomic from C11
+
+There is no reason to use SDL atomics.
+Declare main() with argc/argv params in tests
+
+Declaring the main method as "int main(void)" causes issues with SDL.
+
+Fixes #1209 <https://github.com/Genymobile/scrcpy/issues/1209>
+Mention stay awake limitation
+
+The "stay awake" feature only works when the device is plugged in.
+
+Refs #1445 <https://github.com/Genymobile/scrcpy/issues/1445>
+Merge branch 'master' into dev
+Add --prefer-text option
+
+Expose an option to configure how key/text events are forwarded to the
+Android device.
+
+Enabling the option avoids issues when combining multiple keys to enter
+special characters, but breaks the expected behavior of alpha keys in
+games (typically WASD).
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/650>
+Accept port range
+
+Accept a range of ports to listen to, so that it does not fail if
+another instance of scrcpy is currently starting.
+
+The range can be passed via the command line:
+
+    scrcpy -p 27183:27186
+    scrcpy -p 27183  # implicitly 27183:27183, as before
+
+The default is 27183:27199.
+
+Closes #951 <https://github.com/Genymobile/scrcpy/issues/951>
+Send scroll events as a touchscreen
+
+Scroll events were sent with a mouse input device. When scrolling on a
+list, this could cause the whole list to be focused, and drawn with the
+focus color as background.
+
+Send scroll events with a touchscreen input device instead (like motion
+events).
+
+Fixes #1362 <https://github.com/Genymobile/scrcpy/issues/1362>
+Mention version of Indonesian translation
+List available shortcut keys on error
+
+Fixes #1681 <https://github.com/Genymobile/scrcpy/issues/1681>
+
+Suggested-by: Moritz Schulz <moritzleni@gmail.com>
+Update to Gradle 6.3
+
+Signed-off-by: Harsh Shandilya <me@msfjarvis.dev>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+
+-- Note from committer:
+
+The binary gradle/wrapper/gradle-wrapper.jar has the expected SHA-256
+checksum:
+
+    $ curl -L https://services.gradle.org/distributions/gradle-6.3-wrapper.jar.sha256
+    1cef53de8dc192036e7b0cc47584449b0cf570a00d560bfaa6c9eabe06e1fc06
+
+All the changed files match an upgrade executed independently:
+<https://docs.gradle.org/current/userguide/gradle_wrapper.html#sec:upgrading_wrapper>
+Fix double click on rotated display
+
+A double-click outside the device content (in the black borders) resizes
+so that black borders are removed. But the display rotation was not
+taken into account to detect the content.
+
+Use the content size instead of the frame size to fix the issue.
+
+Ref: <https://github.com/Genymobile/scrcpy/issues/898#issuecomment-610993695>
+Unify release makefile
+
+Before this change, release.sh built some native stuff, and
+Makefile.CrossWindows built the Windows releases.
+
+Instead, use a single release.make to build the whole release. It also
+avoids to build the server one more time.
+Add Chocolatey for Windows install
+
+PR #1144 <https://github.com/Genymobile/scrcpy/pull/1144>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Reorder options in alphabetical order
+Adapt call() on ContentProvider for Android 11
+
+This commit in AOSP framework_base added a parameter "attributionTag" to
+the call() method:
+https://android.googlesource.com/platform/frameworks/base.git/+/12ac3f406fed87cb9cd3a28b9947e7202a2d14bd%5E%21/#F17
+
+As a consequence, the method did not exist, so scrcpy used the legacy
+call() method (using the authority "unknown") as a fallback, which fails
+for security reasons.
+
+Fixes #1468 <https://github.com/Genymobile/scrcpy/issues/1468>
+Mention how to add default arguments on Windows
+
+Mention that it is possible to add default arguments by editing the
+wrapper scripts.
+Send touch event without pressure on button up
+
+Refs #1518 <https://github.com/Genymobile/scrcpy/issues/1518>
+Avoid repetition for some shortcuts
+
+Keeping the key pressed generate "repeat" events. It does not make sense
+to repeat the event for rotation or turn screen off.
+Document shell command to get the device IP
+
+PR #1944 <https://github.com/Genymobile/scrcpy/pull/1944>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Manually position and scale the content
+
+Position and scale the content "manually" instead of relying on the
+renderer "logical size".
+
+This avoids possible rounding differences between the computed window
+size and the content size, causing one row or column of black pixels on
+the bottom or on the right.
+
+This also avoids HiDPI scale issues, by computing the scaling manually.
+
+This will also enable to draw items at their expected size on the screen
+(unscaled).
+
+Fixes #15 <https://github.com/Genymobile/scrcpy/issues/15>
+Add undetected device error message in FAQ
+Remove warning when renderer is not OpenGL
+
+Trilinear filtering can currently only be enabled for OpenGL renderers.
+
+Do not print a warning if the renderer is not OpenGL, as it can confuses
+users, while nothing is wrong.
+Upgrade platform-tools (30.0.0) for Windows
+
+Include the latest version of adb in Windows releases.
+README: Add Fedora install instructions
+
+PR #1549 <https://github.com/Genymobile/scrcpy/pull/1549>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add a note about prebuilt server in BUILD.md
+
+Mention that it works with a matching client version.
+Improve FAQ
+Document Windows command line usage
+
+PR #1973 <https://github.com/Genymobile/scrcpy/pull/1973>
+
+Reviewed-by: Yu-Chen Lin <npes87184@gmail.com>
+Add cli option to set the verbosity level
+
+The verbosity was set either to info (in release mode) or debug (in
+debug mode).
+
+Add a command-line argument to change it, so that users can enable debug
+logs using the release:
+
+    scrcpy -Vdebug
+Simplify Chocolatey documentation
+Change "resize to fit" shortcut to MOD+w
+
+For convenience, MOD+x will be used for injecting the CUT keycode.
+Bump version to 1.13
+Explain master and dev branches in BUILD
+
+People may not guess that `master` is not the development branch.
+Remove unused lockedVideoOrientation field
+
+During PR #1151, this field has been moved to ScreenInfo, but has not
+been removed from ScreenEncoder.
+Remove MagicNumber checkstyle
+
+There are a lot of "magic numbers" that we really don't want to extract
+as a constant.
+
+Until now, many @SuppressWarnings annotations were added, but it makes
+no sense to check for magic number if we silent the warnings everywhere.
+Kill the server only after a small delay
+
+Let the server terminate properly once all the sockets are closed.
+
+If it does not terminate (this can happen if the device is asleep), then
+kill it.
+
+Note: since the server process termination is detected by a flag set
+after waitpid() returns, there is a small chance that the process
+terminates (and the PID assigned to a new process) before the flag is
+set but before the kill() call. This race condition already existed
+before this commit.
+
+Fixes #1992 <https://github.com/Genymobile/scrcpy/issues/1992>
+Avoid clipboard synchronization loop
+
+The Android device listens for clipboard changes to synchronize with the
+computer clipboard.
+
+However, if the change comes from scrcpy (for example via Ctrl+Shift+v),
+do not notify the change.
+Update README.pt-br to v1.17
+
+PR #2034 <https://github.com/Genymobile/scrcpy/pull/2034>
+
+Reviewed-by: latreta <yves_henry13@hotmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Move rotation coordinates to screen
+
+Move the window-to-frame coordinates conversion from the input manager
+to the screen.
+
+This will allow to apply more screen-related transformations without
+impacting the input manager.
+Add a clean up process on the device
+
+In order to clean up on close, use a separate process which is not
+killed when the device is disconnected (even if the main process itself
+is killed).
+Reactivate "turn device screen on" feature
+
+This reverts commit 8c8649cfcd710859ce18eab557ed2af8cedb9a42.
+
+I cannot reproduce the issue with Ctrl+Shift+o on any device, so in
+practice it works, it's too bad to remove the feature for a random bug
+on some Android versions on some devices.
+Reference encoder section from FAQ
+Add pinch-to-zoom simulation
+
+If Ctrl is hold when the left-click button is pressed, enable
+pinch-to-zoom to scale and rotate relative to the center of the screen.
+
+Fixes #24 <https://github.com/Genymobile/scrcpy/issues/24>
+Factorize window resize
+
+When the content size changes, either on frame size or client rotation
+changes, the window must be resized. Factorize for both cases.
+Fix expected message length for touch events
+
+The expected length for a touch event control message was incorrect. As
+a consequence, a BufferUnderflowException could occur.
+
+Fixes #1245 <https://github.com/Genymobile/scrcpy/issues/1245>
+Simplify ScreenEncoder
+
+Do not handle iFrameInterval field and parameter, it is never used
+dynamically.
+Fix build errors for macOS
+
+PR #1960 <https://github.com/Genymobile/scrcpy/pull/1960>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Happy new year 2020!
+Indicate that -s can also be used for TCP/IP
+Fix possibly uninitialized value
+
+Due to gotos, "ret" may be returned uninitialized.
+Add "inject touch" control message
+
+Add a control message type in the protocol to forward touch events to
+the device.
+Improve "low quality" section in FAQ
+Bump version to 1.15
+Merge branch 'master' into dev
+Fix typo in README
+Update links to v1.17 in README and BUILD
+Synchronize device clipboard to computer
+
+Automatically synchronize the device clipboard to the computer any time
+it changes.
+
+This allows seamless copy-paste from Android to the computer.
+
+Fixes #1056 <https://github.com/Genymobile/scrcpy/issues/1056#issuecomment-631363684>
+PR #1423 <https://github.com/Genymobile/scrcpy/pull/1423>
+Add reference of the translations in README
+
+Reviewed-by: Yu-Chen Lin <npes87184@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add Indonesian translation for README.md
+
+PR #1802 <https://github.com/Genymobile/scrcpy/pull/1802>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add tests for command-line parsing
+Show a friendly hint for adb installation
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Require Meson 0.48 to get rid of warnings
+
+Debian buster (stable) provides Meson 0.49, which is also available in
+stretch (oldstable) backports. It's time to abandon Meson 0.37.
+
+Ref: 20b3f101a40cd7455cc5b41e381291504deec5ba
+Update copy-paste section in README
+
+Update documentation regarding the recent copy-paste changes.
+Handle NumPad events when NumLock is disabled
+
+PR #1188 <https://github.com/Genymobile/scrcpy/pull/1188>
+Fixes #1048 <https://github.com/Genymobile/scrcpy/issues/1048>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Simplify net.c
+
+The platform-specific code for net.c was implemented in sys/*/net.c.
+
+But the differences are quite limited, so use ifdef-blocks in the single
+net.c instead.
+Add option to lock video orientation
+
+PR #1151 <https://github.com/Genymobile/scrcpy/pull/1151>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Mention AutoAdb in README
+Reset window size on initialization
+
+On macOS with renderer "metal", HiDPI scaling may be incorrect on
+initialization when several displays are connected.
+
+Resetting the window size fixes the problem.
+
+Refs #15 <https://github.com/Genymobile/scrcpy/issues/15>
+Merge branch 'master' into dev
+Extract optimal window size detection
+
+Extract the computation to detect whether the current size of the window
+is already optimal.
+
+This will allow to reuse it for rendering.
+Use linear filtering
+
+Anisotropic filtering makes no sense for scrcpy use case.
+
+This (semantically) reverts 9e328ef98b0fc730036aa389f33649a31737d0e3.
+Increase buffer size to fix "set clipboard" event
+
+The buffer size must be greater than any event message.
+
+Clipboard events may take up to 4096 bytes, so increase the buffer size.
+
+Fixes #1425 <https://github.com/Genymobile/scrcpy/issues/1425>
+Update links to v1.15.1 in README and BUILD
+Register rotation watcher on selected display
+
+PR #1275 <https://github.com/Genymobile/scrcpy/pull/1275>
+
+Signed-off-by: Kostiantyn Luzan <vblack2006@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add shortcuts to rotate display
+
+Add Ctrl+Left and Ctrl+Right shortcuts to rotate the display (the
+content of the scrcpy window).
+
+Contrary to --lock-video-orientation, the rotation has no impact on
+recording, and can be changed dynamically (and immediately).
+
+Fixes #218 <https://github.com/Genymobile/scrcpy/issues/218>
+Fix utf-8 char path in windows
+
+The file 'E:\安安\scrcpy-win64-v1.12.1-1-g31bd950\scrcpy-server'
+exists, however, it will show msg as follow:
+
+    INFO: scrcpy 1.12.1 <https://github.com/Genymobile/scrcpy>
+    stat: No such file or directory
+    ERROR: 'E:\安安\scrcpy-win64-v1.12.1-1-g31bd950\scrcpy-server' does
+    not exist or is not a regular file
+    Press any key to continue...
+
+This patch fixes it.
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Improve bug report template
+
+Insert a code block to (hopefully) increase the chances that users
+format their terminal output.
+Update links to v1.15 in README and BUILD
+Remove link to Windows 32 bits release
+
+Binaries created with MinGW (even a simple Hello World) are detected as
+malware by some anti-virus. For some reason, only the 32 bits version of
+scrcpy is impacted.
+
+Since users should use the 64 bits version by default anyway, remove the
+link to the 32 bits version from the main page.
+
+The 32 bits release is still available in the "releases" tab.
+
+See <https://github.com/Genymobile/scrcpy/issues/1102>
+Fix feature test macro
+
+The expected feature test macro is _POSIX_C_SOURCE having a value
+greater or equal to 200809L.
+
+Fixes #1726 <https://github.com/Genymobile/scrcpy/issues/1726>
+Do not block on accept() if server died
+
+The server may die before connecting to the client. In that case, the
+client was blocked indefinitely (until Ctrl+C) on accept().
+
+To avoid the problem, close the server socket once the server process is
+dead.
+Add --codec-options
+
+Add a command-line parameter to pass custom options to the device
+encoder (as a comma-separated list of "key[:type]=value").
+
+The list of possible codec options is available in the Android
+documentation:
+<https://d.android.com/reference/android/media/MediaFormat>
+
+PR #1325 <https://github.com/Genymobile/scrcpy/pull/1325>
+Refs #1226 <https://github.com/Genymobile/scrcpy/pull/1226>
+
+Co-authored-by: Romain Vimont <rom@rom1v.com>
+Rename "rotation" to "device rotation"
+
+This paves the way to reduce confusion in ScreenInfo when it will handle
+locked video orientation.
+Configure server verbosity from the client
+
+Send the requested log level from the client.
+
+This paves the way to configure it via a command-line argument.
+Add shortcuts for COPY and CUT
+
+Send COPY and CUT on MOD+c and MOD+x (only supported for Android >= 7).
+
+The shortcuts Ctrl+c and Ctrl+x should generally also work (even before
+Android 7), but the active Android app may use them for other actions
+instead.
+Simplify size changes in fullscreen or maximized
+
+If the content size changes (due to rotation for example) while the
+window is maximized or fullscreen, the resize must be applied once
+fullscreen and maximized are disabled.
+
+The previous strategy consisted in storing the windowed size, computing
+the target size on rotation, and applying it on window restoration. But
+tracking the windowed size (while ignoring the non-windowed size) was
+tricky, due to unspecified order of SDL events (e.g. size changes can be
+notified before "maximized" events), race conditions when reading window
+flags, different behaviors on different platforms...
+
+To simplify the whole resize management, store the old content size (the
+frame size, possibly rotated) when it changes while the window is
+maximized or fullscreen, so that the new optimal size can be computed on
+window restoration.
+Rename release.make to release.mk
+
+It's more standard, and benefits from syntax coloration in vi.
+Add Android device and version in issue template
+Update links to v1.14 in README and BUILD
+Swap paste shortcuts
+
+For consistency with MOD+c and MOD+x, use MOD+v to inject PASTE.
+
+Use Mod+Shift+v to inject clipboard content as a sequence of text
+events.
+Fix uninitialized repeat count in key events
+
+A new "repeat" field has been added by
+3c1ed5d86c38bcbd5353b0a7e6ef5653d6c44d0d, but it was not initialized in
+every code path.
+
+As a consequence, keycodes generated by shortcuts were sent with an
+undetermined value, breaking some shortcuts (especially HOME) randomly.
+
+Fixes #1643 <https://github.com/Genymobile/scrcpy/issues/1643>
+Log new size on auto-resize request
+
+On "resize to fit" and "resize to pixel-perfect", log the new size.
+Update links to v1.16 in README and BUILD
+Paste on "set clipboard" if possible
+
+Ctrl+Shift+v synchronizes the computer clipboard to the Android device
+clipboard. This feature had been added to provide a way to copy UTF-8
+text from the computer to the device.
+
+To make such a paste more straightforward, if the device runs at least
+Android 7, also send a PASTE keycode to paste immediately.
+
+<https://developer.android.com/reference/android/view/KeyEvent.html#KEYCODE_PASTE>
+
+Fixes #786 <https://github.com/Genymobile/scrcpy/issues/786>
+Use a more portable shebang for bash
+
+This should increase the portability of bash scripts across various *nix
+systems such as BSD-like distributions.
+
+PR #1716 <https://github.com/Genymobile/scrcpy/pull/1716>
+
+Signed-off-by: Luís Ferreira <contact@lsferreira.net>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Increase LOD bias for mipmapping
+
+Mipmapping caused too much blurring.
+
+Using a LOD bias of -1 instead of -0.5 seems a better compromise to
+avoid low-quality downscaling while keeping sharp edges in any case.
+
+Refs <https://github.com/Genymobile/scrcpy/issues/1394>
+Refs <https://github.com/Genymobile/scrcpy/issues/40#issuecomment-591917787>
+Fix union typo
+
+The "set clipboard" event used the wrong union type to store its text.
+
+In practice, it worked because both are at the same offset.
+Accept resize shortcuts on maximized window
+
+Allow "resize to fit" and "resize to pixel-perfect" on maximized window:
+restore the window to normal size then resize.
+Log device details on server start
+Add option to force legacy method for pasting
+
+Some devices do not behave as expected when setting the device clipboard
+programmatically.
+
+Add an option --legacy-paste to change the behavior of Ctrl+v and MOD+v
+so that they inject the computer clipboard text as a sequence of key
+events (the same way as MOD+Shift+v).
+
+Fixes #1750 <https://github.com/Genymobile/scrcpy/issues/1750>
+Fixes #1771 <https://github.com/Genymobile/scrcpy/issues/1771>
+Fix FAQ.ko.md
+
+PR #1767 <https://github.com/Genymobile/scrcpy/pull/1767>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Initialize server struct dynamically
+
+This will allow to add mutex/cond fields.
+Remove "get clipboard" call
+
+Now that every device clipboard change is automatically synchronized to
+the computer, the "get clipboard" request (bound to MOD+c) is useless.
+Copy the options used in input manager init
+
+This avoids to pass additional options to some input manager functions.
+
+Refs #1623 <https://github.com/Genymobile/scrcpy/pull/1623>
+Do not warn on terminating the server
+
+If the server is already dead, terminating it fails. This is expected.
+Make scrcpy.h independant of other headers
+
+The header scrcpy.h is intended to be the "public" API. It should not
+depend on other internal headers.
+
+Therefore, declare all required structs in this header and adapt
+internal code.
+Fix memory leak on portable builds
+
+The function get_server_path() sometimes returned an owned string,
+sometimes a non-owned string.
+
+Always return an allocated (owned) string, and free it after usage.
+Store rotated content size
+
+This avoids to compute it every time from the frame size.
+Forward Shift to the device
+
+This allows to select text using Shift+(arrow keys).
+
+Fixes #942 <https://github.com/Genymobile/scrcpy/issues/942>
+Remove duplicate include
+Adding new option --encoder
+
+Some devices have more than one encoder, and some encoders may cause
+issues or crash. With this option we can specify which encoder we want
+the device to use.
+
+PR #1827 <https://github.com/Genymobile/scrcpy/pull/1827>
+Fixes #1810 <https://github.com/Genymobile/scrcpy/issues/1810>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Disable input events when necessary
+
+Disable input events on secondary displays before Android 10, even if
+FLAG_PRESENTATION is not set.
+
+Refs #1288 <https://github.com/Genymobile/scrcpy/issues/1288>
+Ignore text events for shortcuts
+
+Pressing Alt+c generates a text event containing "c", so "c" was sent to
+the device when --prefer-text was enabled.
+
+Ignore text events when the mod state matches a shortcut modifier.
+Add --force-adb-forward
+
+Add a command-line option to force "adb forward", without attempting
+"adb reverse" first.
+
+This is especially useful for using SSH tunnels without enabling remote
+port forwarding.
+Fix touch coordinates on rotated display
+
+The touch coordinates were not rotated.
+Merge branch 'master' into dev
+Do not log success on failure
+
+If calling the private API does not work, an exception is printed. In
+that case, do not log that the action succeeded.
+Fix options order
+Upgrade gradle build tools to 4.0.1
+Simplify PASTE option for "set clipboard"
+
+When the client requests to set the clipboard, it may request to press
+the PASTE key in addition. To be a bit generic, it was stored as a flag
+in ControlMessage.java.
+
+But flags suggest that it represents a bitwise union. Use a simple
+boolean instead.
+Fix touch events HiDPI-scaling
+
+Touch events were HiDPI-scaled twice:
+ - once because the position (provided as floats between 0 and 1) were
+   converted in pixels using the drawable size (not the window size)
+ - once due to screen_convert_to_frame_coords()
+
+One possible fix could be to compute the position in pixels from the
+window size instead, but this would unnecessarily round the event
+position to the nearest window coordinates (instead of drawable
+coordinates).
+
+Instead, expose two separate functions to convert to frame coordinates
+from either window or drawable coordinates.
+
+Fixes #1536 <https://github.com/Genymobile/scrcpy/issues/1536>
+Refs #15 <https://github.com/Genymobile/scrcpy/issues/15>
+Refs e40532a3761da8b3aef484f1d435ef5f50d94574
+Implement access to settings without Context
+
+Expose methods to access the Android settings using private APIs.
+
+This allows to read and write settings values immediately without
+starting a new process to call "settings".
+Fix Windows Ctrl Handler declaration
+
+The handler function signature must include the calling convention
+declaration.
+
+Ref: <https://stackoverflow.com/questions/61717439/why-calling-setconsolectrlhandler-triggers-a-warning>
+Workaround compiler warning
+
+Some compilers warns on uninitialized value in impossible case:
+
+    warning: variable 'result' is used uninitialized whenever switch
+    default is taken [-Wsometimes-uninitialized]
+gitignore: Add x/ directory
+
+People following default build instructions can be caught off guard by
+seeing the build artifacts in the git tree.
+
+Signed-off-by: Harsh Shandilya <me@msfjarvis.dev>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add --render-driver command-line option
+
+Add an option to set a render driver hint (SDL_HINT_RENDER_DRIVER).
+Fix the printed versions (were opposite)
+
+PR #1224 <https://github.com/Genymobile/scrcpy/pull/1224>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Fix rotation while the window is maximized
+
+Keep the windowed window size to handle maximized window the same way as
+fullscreen window.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/750>
+Improve resizing workaround
+
+Call the same method as when the event is received on the event loop, so
+that the behavior is the same in both cases.
+Rename MSG_SERIALIZED_MAX_SIZE to MSG_MAX_SIZE
+
+For simplicity and consistency with the server part.
+Remove --fullscreen validation
+
+Many options are meaningless if --no-display is set.
+
+We don't want to validate all possible combinations, so don't make an
+exception for --fullscreen.
+Mention sndcpy
+Add missing mutex unlock on error
+
+Fixes #1770 <https://github.com/Genymobile/scrcpy/issues/1770>
+
+Reported-by: lordnn
+Add an option to keep the device awake
+
+Add an option to prevent the device to sleep:
+
+    scrcpy --stay-awake
+    scrcpy -w
+
+The initial state is restored on exit.
+
+Fixes #631 <https://github.com/Genymobile/scrcpy/issues/631>
+Pass a Locale to toUpperCase()
+
+Make lint happy.
+Fix receiver on partial device messages
+
+If a single device message was read in several chunks from the control
+socket, the communication was broken.
+Restore power mode to normal on cleanup
+
+This avoids to let the device screen turned off (as enabled by Ctrl+o or
+--turn-screen-off).
+
+PR #1576 <https://github.com/Genymobile/scrcpy/pull/1576>
+Fixes #1572 <https://github.com/Genymobile/scrcpy/issues/1572>
+Upgrade platform-tools (30.0.4) for Windows
+
+Include the latest version of adb in Windows releases.
+Update BUILD.md
+
+Update the macOS section.
+
+PR #1559 <https://github.com/Genymobile/scrcpy/pull/1559>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Fix static_assert() parameters
+
+In C11, static_assert() expects a message.
+Record a packet with its duration
+
+Record a packet only once the following has been received, so that we
+can set its duration before muxing it.
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/702>
+Add util function to parse a list of integers
+
+This will help parsing arguments like '1234:5678' into a list of
+integers.
+Rename test names from "event" to "msg"
+
+The meson test names had not been changed when "event" had been renamed
+to "message".
+
+Ref: 28980bbc90ab93cf61bdc4b36d2448b8cebbb7df
+Add local.properties to gitignore
+Handle "show touches" on the device-side
+
+Now that the server can access the Android settings and clean up
+properly, handle the "show touches" option from the server.
+
+The initial state is now correctly restored, even on device
+disconnection.
+Rename event converter functions
+
+Rename "XXX_from_sdl_to_android" to "convert_XXX", to avoid huge
+function names.
+Replace noconsole binary by a wrapper script
+
+This simplifies the build system.
+
+Refs <https://github.com/Genymobile/scrcpy/issues/1975#issuecomment-745314161>
+Synchronize clipboard on Ctrl+v
+
+Pressing Ctrl+v on the device will typically paste the clipboard
+content.
+
+Before sending the key event, synchronize the computer clipboard to the
+device clipboard to allow seamless copy-paste.
+Use portable shebang for all bash scripts
+
+Refs #426 <https://github.com/Genymobile/scrcpy/pull/426>
+Refs #1716 <https://github.com/Genymobile/scrcpy/pull/1716>
+Add --rotation command-line option
+
+In addition to Ctrl+Left and Ctrl+Right shortcuts, add a command-line
+parameter to set the initial rotation.
+Wait server from a separate thread
+
+Create a thread just to wait for the server process exit.
+
+This paves the way to simply wake up a blocking accept() in a portable
+way.
+Handle repeating keycodes
+
+Initialize "repeat" count on key events.
+
+PR #1519 <https://github.com/Genymobile/scrcpy/pull/1519>
+Refs #1013 <https://github.com/Genymobile/scrcpy/pull/1013>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add option to specify the initial window position
+
+Add --window-x and --window-y parameters.
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Happy new year 2021!
+Move injection methods to Device
+
+Only the main injection method was exposed on Device, the convenience
+methods were implemented in Controller.
+
+For consistency, move them all to the Device class.
+Add generic intrusive FIFO queue
+
+We need several FIFO queues (a queue of packets, a queue of messages,
+etc.).
+
+Some of them are implemented using cbuf, a generic circular buffer. But
+for recording, we need to store the packets in an unbounded queue until
+they are written, so the queue was implemented manually.
+
+Create a generic implementation (using macros) to avoid reimplementing
+it every time.
+Merge branch 'master' into dev
+Document --encoder option
+
+Add documentation for the new option --encoder in the manpage and in
+README.md.
+Pass full options struct to static functions
+
+This avoids to pass specific options values individually. Since these
+function are static (internal to the file), this is not a problem to
+make them depend on scrcpy_options.
+
+Refs #1623 <https://github.com/Genymobile/scrcpy/pull/1623>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Format shortcut documentation
+
+For consistency, start the descriptions with a capital letter.
+Refuse to push a non-regular file server
+
+If SCRCPY_SERVER_PATH points to a directory, then a directory will be
+pushed to /data/local/tmp/scrcpy-server.jar.
+
+When executing it, app_process will just abort and leave the directory
+on the device, causing scrcpy to always fail.
+
+To avoid the problem, check that the server is a regular file before
+pushing it.
+
+Closes #956 <https://github.com/Genymobile/scrcpy/issues/956>
+Upgrade Android SDK to 30
+Do not report workarounds errors
+
+Some workarounds are needed on some devices. But applying them may cause
+exceptions on other devices, where they are not necessary anyway.
+
+Do not report these errors in release builds.
+
+Closes #994 <https://github.com/Genymobile/scrcpy/issues/994>
+Customize shortcut modifier
+
+Add --shortcut-mod, and use Alt as default modifier.
+
+This paves the way to forward the Ctrl key to the device.
+Accept Super as shortcut modifier
+
+In addition to (left) Alt, also accept (left) Super. This is especially
+convenient for macOS users (Super is the Cmd key).
+Add test_buffer_util
+
+Signed-off-by: Yu-Chen Lin <npes87184@gmail.com>
+Add scoop instructions for Windows
+
+PR #1202 <https://github.com/Genymobile/scrcpy/pull/1202>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Fix README indentation
+Add missing include string.h
+
+Include <string.h> for strdup() and strtok_r().
+Fix typo in README.md
+
+PR #1523 <https://github.com/Genymobile/scrcpy/pull/1523>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Set computer clipboard only if necessary
+
+Do not explicitly set the clipboard text if it already contains the
+expected content.
+
+Even if copy-paste loops are avoided by the previous commit, this avoids
+to trigger a clipboard change on the computer-side.
+
+Refs #1580 <https://github.com/Genymobile/scrcpy/issues/1580>
+Fix test compilation on mingw
+
+Including SDL2/SDL.h redefines main to SDL_main by default.
+Bump version to 1.15.1
+Enable trilinear filtering for OpenGL
+
+Improve downscaling quality if mipmapping is available.
+
+Suggested-by: Giumo Clanjor (哆啦比猫/兰威举) <cjxgm2@gmail.com>
+
+Fixes #40 <https://github.com/Genymobile/scrcpy/issues/40>
+Ref: <https://github.com/Genymobile/scrcpy/issues/40#issuecomment-591917787>
+Fix AutoAdb url
+
+PR #1344 <https://github.com/Genymobile/scrcpy/pull/1344>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Apply workarounds only on error
+
+To avoid NullPointerException on some devices, workarounds have been
+implemented. But these workaround produce (harmless) internal errors
+causing exceptions to be printed in the console.
+
+To avoid this problem, apply the workarounds only if it fails without
+them.
+
+Fixes #994 <https://github.com/Genymobile/scrcpy/issues/994>
+Refs #365 <https://github.com/Genymobile/scrcpy/issues/365>
+Refs #940 <https://github.com/Genymobile/scrcpy/issues/940>
+Mention how to turn the screen on in README
+
+Now that Ctrl+Shift+o has been reactivated, mention it in the "turn
+screen off" section.
+Merge branch 'master' into dev
+Replace SDL_assert() by assert()
+
+SDL_assert() open a dialog on assertion failure.
+
+There is no reason not to use assert() directly.
+Upgrade SDL (2.0.14) for Windows
+
+Include the latest version of SDL in Windows releases.
+Fix more log format warning
+
+The expression port + 1 is promoted to int, but printed as uint16_t.
+
+This is the same mistake fixed for a different log by
+7eb16ce36458011d87972715f08bd9f03ff39807.
+
+Refs #1726 <https://github.com/Genymobile/scrcpy/issues/1726>
+Log encoder name
+
+When the encoder is selected automatically, log the name of the selected
+encoder.
+Interrupt device threads on stop
+
+The (non-daemon) threads were not interrupted on video stream stopped,
+leaving the server process alive.
+
+Interrupt them to wake up their blocking call so that they terminate
+properly.
+
+Refs #1992 <https://github.com/Genymobile/scrcpy/issues/1992>
+Make setScreenPowerMode() method static
+
+Its implementation does not use the instance at all.
+Initialize a default log level
+
+Clean up has been broken by 3df63c579da7a35048458c6884f5f386154d2353.
+
+The verbosity was correctly initialized for the Server process, but not
+for the CleanUp process.
+
+To avoid the problem, initialize a default log level.
+Disable "resize to fit" in maximized state
+
+In maximized state (but not fullscreen), it was possible to resize to
+fit the device screen (with Ctrl+x or double-clicking on black borders).
+
+This caused problems on macOS with the "expand to fullscreen" feature,
+which behaves like a fullscreen mode but is seen as maximized by SDL.
+In that state, resizing to fit causes unexpected results.
+
+To keep the behavior consistent on all platforms, just disable "resize
+to fit" when the window is maximized.
+Properly handle Ctrl+C on Windows
+
+By default, Ctrl+C just kills the process on Windows. This caused
+corrupted video files on recording.
+
+Handle Ctrl+C properly to clean up properly.
+
+Fixes #818 <https://github.com/Genymobile/scrcpy/issues/818>
+Reorder options in alphabetical order
+Suppress DiscouragedPrivateApi lint warning
+Increase clipboard size from 4k to 256k
+
+Beyond 256k, SDL_GetClipboardText() returns an empty string on my
+computer.
+
+Fixes #1117 <https://github.com/Genymobile/scrcpy/issues/1117>
+Remove useless exception declaration
+
+The interface declares it can throw a RemoteException, but the
+implementation never throws such exception.
+Accept --max-fps before Android 10
+
+KEY_MAX_FPS_TO_ENCODER existed privately before Android 10:
+<https://github.com/Genymobile/scrcpy/issues/488#issuecomment-567321437>
+Mention in README that Ctrl is forwarded
+Rename max length constant for text injection
+
+To avoid confusion with the max text size for clipboard, rename the
+constant limiting the text injection length.
+Factorize scrcpy options and command-line args
+
+Do not duplicate all scrcpy options fields in the structure storing the
+parsed command-line arguments.
+Add Traditional Chinese translation for README
+
+Reviewed-by: Yu-Chen Lin <npes87184@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Compute all screen info from ScreenInfo
+
+Screen information was partially initialized from Device. Move this
+initialization to ScreenInfo.
+Add display id parameter
+
+Add --display command line parameter to specify a display id.
+
+PR #1238 <https://github.com/Genymobile/scrcpy/pull/1238>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add packaging status
+
+PR #1650 <https://github.com/Genymobile/scrcpy/pull/1650>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Use "/usr/bin/env bash" for build-wrapper.sh
+
+PR #426 <https://github.com/Genymobile/scrcpy/pull/426>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Fix clipboard paste condition
+
+To avoid possible copy-paste loops between the computer and the device,
+the device clipboard is not set if it already contains the expected
+content.
+
+But the condition was wrong: it was not set also if it was empty.
+
+Refs 1223a72eb83ebafb878a25356250896c45b5cefa
+Fixes #1658 <https://github.com/Genymobile/scrcpy/issues/1658>
+Update README.zh-Hans to v1.17
+
+PR #2029 <https://github.com/Genymobile/scrcpy/pull/2029>
+
+Reviewed-by: Win7GM
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add missing consts
+
+String parsing functions should not be able to modify their input.
+Remove useles import
+Pass screen to mouse event converters
+
+Mouse events coordinates depend on the screen size and location, so the
+converter need to access the screen.
+
+The fact that it needs the position or the size is an internal detail,
+so pass a pointer to the whole screen structure.
+Fix log format warning
+
+The expression port + 1 is promoted to int, but printed as uint16_t.
+Fix incorrect log return value
+
+The function must return a SDL_LogPriority, but returned an enum
+sc_log_level.
+
+(It was harmless because this specific return should never happen, as
+asserted.)
+Revert "Improve resizing workaround"
+
+This reverts commit 92cb3a666109b67598cd36b9c0088fb697abbd23, which
+broke the fullscreen/maximized restoration size on Windows.
+
+Fixes #1346 <https://github.com/Genymobile/scrcpy/issues/1346>
+Add option --no-mipmaps
+
+Add an option to disable trilinear filtering even if mipmapping is
+available.
+Improve rotation documentation
+Upgrade SDL (2.0.12) for Windows
+
+Include the latest version of SDL in Windows releases.
+Reference FFmpeg Windows builds from GitHub
+
+Refs #1753 <https://github.com/Genymobile/scrcpy/issues/1753>
+Set device clipboard only if necessary
+
+Do not explicitly set the clipboard text if it already contains the
+expected content. This avoids possible copy-paste loops between the
+computer and the device.
+Workaround maximized+fullscreen on Windows
+
+On Windows, in maximized+fullscreen state, disabling fullscreen mode
+unexpectedly triggers the "restored" then "maximized" events, leaving
+the window in a weird state (maximized according to the events, but not
+maximized visually).
+
+Moreover, apply_pending_resize() asserts that fullscreen is disabled.
+
+To avoid the issue, if fullscreen is set, just ignore the "restored"
+event.
+Stabilize auto-resize
+
+The window dimensions are integers, so resizing to fit the content may
+not be exact.
+
+When computing the optimal size, it could cause to reduce alternatively
+the width and height by few pixels, making the "optimal size" unstable.
+
+To avoid this problem, check if the optimal size is already correct
+either by keeping the width or the height.
+Upgrade FFmpeg (4.2.2) for Windows
+
+Include the latest version of FFmpeg in Windows releases.
+Merge branch 'master' into dev
+Simplify rotation watcher call
+
+Remove unnecessary private method (which was wrongly public).
+Add tests for control message length
+
+This will avoid regressions for #1245.
+
+<https://github.com/Genymobile/scrcpy/issues/1245>
+Upgrade platform-tools (30.0.5) for Windows
+
+Include the latest version of adb in Windows releases.
+Move event conversion to input_manager
+
+Only keep helper functions separated.
+
+This will help to convert coordinates internally when necessary.
+Retrieve screen info once
+
+The method getScreenInfo() is synchronized, and the result may change
+between calls.
+
+Call it once and store the result in a local variable.
+Add an option to forward all clicks
+
+Add --forward-all-clicks to disable mouse shortcuts and forward middle
+and right clicks to the device instead.
+
+Fixes #1302 <https://github.com/Genymobile/scrcpy/issues/1302>
+Fixes #1613 <https://github.com/Genymobile/scrcpy/issues/1613>
+Simplify ScreenEncoder more
+
+Commit 927d655ff66fa439ccd27e054ae6d54a651640cc removed the
+iFrameInternal field and constructor argument.
+
+Also remove it from createFormat() arguments.
+Reference --shortcut-mod from shortcuts list
+
+Fixes #1681 <https://github.com/Genymobile/scrcpy/issues/1681>
+
+Suggested-by: Moritz Schulz <moritzleni@gmail.com>
+Reset power mode only if screen is on
+
+PR #1670 <https://github.com/Genymobile/scrcpy/pull/1670>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Make Device methods static when possible
+
+The behavior of some methods do not depend on the user-provided options.
+These methods can be static. This will allow to call them directly from
+the cleanup process.
+Use Cmd instead of Ctrl on macOS when possible
+
+Fixes <https://github.com/Genymobile/scrcpy/issues/642>
+Update links to v1.13 in README and BUILD
+Call CloseHandle() after wait on Windows
+
+TerminateProcess() is "equivalent" to kill(), while
+WaitForSingleObject() is "equivalent" to waitpid(), so the handle must
+be closed after WaitForSingleObject().
+Use --cask for latest versions of brew
+
+PR #2004 <https://github.com/Genymobile/scrcpy/pull/2004>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Mention scrcpy Debian package in README
+Fix typo in comments
+Add Brazilian Portuguese translation
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Fix warnings
+
+Fix warnings reported with -Dwarning_level=2.
+Fix typo in manpage
+Add a note about multi-display limitation
+
+Secondary display mirroring is read-only before Android 10.
+Enable Java deprecation warnings details
+
+Without the option, gradle reports a lint issue, but without any
+details.
+Improve manpage formatting
+
+Add a new line to avoid unwanted text justification
+Add unit test for big "set clipboard" event
+
+Add a unit test to avoid regressions.
+
+Refs #1425 <https://github.com/Genymobile/scrcpy/issues/1425>
+Git-ignore release directories
+Add issue templates
+
+Closes #1157 <https://github.com/Genymobile/scrcpy/issues/1157>
+Handle window events from screen.c
+
+Only the screen knows what to do on window events.
+
+This paves the way to handle more window events.
+Remove fprintf() call in tests
+
+It should never have been committed.
+Fix constants name in comment
+Rename THRESHOLD to threshold
+
+Since the field is not final anymore, lint expects the name not to be
+capitalized.
+Handle locked video orientation from ScreenInfo
+
+Centralize video size management in ScreenInfo.
+
+This allows to always send the correct initial video size to the client
+if the video orientation is locked.
+Remove unused constant
+
+It has not been removed when mouse and touch events have been merged.
+Fix include order
+Forward Ctrl to the device
+
+Now that the scrcpy shortcut modifier is Alt by default (and can be
+configured), forward Ctrl to the device.
+
+This allows to trigger Android shortcuts.
+
+Fixes #555 <https://github.com/Genymobile/scrcpy/issues/555>
+Reorder functions
+
+Move functions so that they can be called from enable_tunnel() (in the
+following commit).
+Keep the screen off on powering on
+
+PR #1577 <https://github.com/Genymobile/scrcpy/pull/1577>
+Fixes #1573 <https://github.com/Genymobile/scrcpy/issues/1573>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Accept negative window position
+
+It seems to work on some window managers.
+
+Fixes #1242 <https://github.com/Genymobile/scrcpy/issues/1242>
+Configure log priority early
+
+The log priority must be configured before parsing command-line
+arguments, in order to get logs as expected.
+Merge branch 'master' into dev
+Fix "press Enter key" message
+
+The message said "Press any key to continue...", whereas only
+Enter/Return is accepted.
+
+PR #1783 <https://github.com/Genymobile/scrcpy/pull/1783>
+Fixes #1757 <https://github.com/Genymobile/scrcpy/issues/1757>
+
+Reviewed-by: Yu-Chen Lin <npes87184@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add --no-key-repeat cli option
+
+Add an option to avoid forwarding repeated key events.
+
+PR #1623 <https://github.com/Genymobile/scrcpy/pull/1623>
+Refs #1013 <https://github.com/Genymobile/scrcpy/issues/1013>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Add option to specify the initial window size
+
+Add --window-width and --window-height parameters.
+
+If only one is provided, the other is computed so that the aspect ratio
+is preserved.
+Add shortcut to rotate screen
+
+On Ctrl+r, disable auto-rotation (if enabled), set the screen rotation
+and re-enable auto-rotation (if it was enabled).
+
+Closes #11 <https://github.com/Genymobile/scrcpy/issues/11>
+Bump version to 1.14
+Reorganize message size constants
+
+Make the max clipboard text length depend on the max message size.
+Refactor server tunnel initialization
+
+Start the server socket in enable_tunnel() directly.
+
+For the caller point of view, enabling the tunnel opens a port (either
+the server socket locally or the "adb forward" process).
+Refactor server_start() error handling
+
+This avoids cleanup duplication.
+Mention that MENU unlocks screen
+
+Pressing MENU while in lock screen unlocks (it still asks for the schema
+or code if enabled).
+Remove spurious space
+Inject WAKEUP instead of POWER
+
+To power the device on, inject KEYCODE_WAKEUP to avoid a possible
+race condition (the device might become off between the test
+isScreenOn() and the POWER keycode injection).
+Record asynchronously
+
+The record file was written from the stream thread. As a consequence,
+any blocking I/O to write the file delayed the decoder.
+
+For maximum performance even when recording is enabled, send
+(refcounted) packets to a separate recording thread.
+Bump version to 1.16
+Serialize text size on 4 bytes
+
+This will allow to send text having a size greater than 65535 bytes.
+Make expression order consistent
+
+The condition "cmd" was always before "shift" in all expressions except
+4.
+Avoid additional copy on Java text parsing
+
+Directly pass the buffer range to the String constructor.
+Reference README.md from localized versions
+
+Mention that the README.md is the only one being up-to-date.
+Merge pull request #1002 into dev
+
+Fix utf-8 char path in windows
+
+<https://github.com/Genymobile/scrcpy/pull/1002>
+Revert "Inject WAKEUP instead of POWER"
+
+WAKEUP does not work on some devices.
+
+Fixes #1655 <https://github.com/Genymobile/scrcpy/issues/1655>
+
+This reverts commit 322f1512ea806611eb37f508cd952bbbc050f853.
+Log actions on the caller side
+
+Some actions are exposed by the Device class, but logging success should
+be done by the caller.
+Fix server debugger for Android >= 9
+
+Add a compilation flag to select the debugger method to use:
+ - old: Android < 9
+ - new: Android >= 9
+
+See <https://github.com/Genymobile/scrcpy/issues/1187#issuecomment-599075661>
+Add simplified Chinese translation for README.md
+
+PR #1723 <https://github.com/Genymobile/scrcpy/pull/1723>
+
+Co-authored-by: Shaw Yu <shawyu.nz@gmail.com>
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Configure log level for application only
+
+Do not expose internal SDL logs to users.
+
+Fixes #1441 <https://github.com/Genymobile/scrcpy/issues/1441>
+Documentation rectifications
+
+PR #1151 <https://github.com/Genymobile/scrcpy/pull/1151>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Fix warnings on Windows
+
+fix warnings reported with -Dwarning_level=2 on Windows.
+Push clipboard text only if not null
+
+In practice, it does not change anything (it just avoids a spurious
+wake-up), but semantically, it makes no sense to call
+pushClipboardText() with a null value.
+Fix size_t format specifier for Windows
+
+Use "%Iu" on Windows. This fixes the following warning:
+
+    ../app/src/sys/win/command.c:17:14: warning: unknown conversion type character ‘l’ in format [-Wformat=]
+       17 |         LOGE("Command too long (%" PRIsizet " chars)", len - 1);
+Fix missing change of Ctrl key in README
+
+PR #1652 <https://github.com/Genymobile/scrcpy/pull/1652>
+
+Signed-off-by: Romain Vimont <rom@rom1v.com>
+Move constants to ServiceManager
+
+PACKAGE_NAME and USER_ID could be use by several "managers", so move
+them to the service manager.
+Remove deprecation warning
+
+As a workaround for some devices, we need to prepare the main looper.
+The method is now deprecated, but we still want to call it.
+Avoid compiler warning
+
+The field lock_video_orientation may only take values between -1 and 3
+(included). But the compiler may trigger a warning on the sprintf()
+call, because its type could represent values which could overflow the
+string (like "-128"):
+
+> warning: ‘%i’ directive writing between 1 and 4 bytes into a region of
+> size 3 [-Wformat-overflow=]
+
+Increase the buffer size to remove the warning.
+Upgrade FFmpeg (4.3.1) for Windows
+
+Include the latest version of FFmpeg in Windows releases.
+Improve documentation for consistency
+
+Make --lock-video-orientation documentation consistent with that of
+--rotation.
+Move command-line parsing to a separate file
+Rename "input_manager" variables to "im"
+
+It is used a lot, a short name improves readability.
